@@ -2,13 +2,15 @@ package com.medilabo.patient_service.controller;
 
 import com.medilabo.patient_service.model.Patient;
 import com.medilabo.patient_service.service.IPatientService;
-import com.medilabo.patient_service.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
+/**
+ * REST controller responsible for patient management.
+ * Provides endpoints to retrieve, create and update patients.
+ */
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
@@ -19,6 +21,12 @@ public class PatientController {
         this.patientService = patientService;
     }
 
+    /**
+     * Retrieves a patient by ID.
+     *
+     * @param id the ID of the patient to retrieve
+     * @return a response containing the requested patient
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatientById(@PathVariable Integer id){
        Patient patient = patientService.findPatientById(id);
@@ -26,6 +34,12 @@ public class PatientController {
        return ResponseEntity.ok(patient);
     }
 
+    /**
+     * Creates a new patient.
+     *
+     * @param patient the patient information to create
+     * @return a response containing the created patient with HTTP status 201
+     */
     @PostMapping
     public ResponseEntity<Patient> createPatient(@Valid @RequestBody Patient patient){
         Patient newPatient = patientService.addNewPatient(patient);
@@ -35,6 +49,13 @@ public class PatientController {
                 .body(newPatient);
     }
 
+    /**
+     * Updates an existing patient.
+     *
+     * @param id the ID of the patient to update
+     * @param patient the new patient information
+     * @return a response containing the updated patient
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Patient> updatePatient(@PathVariable Integer id, @Valid @RequestBody Patient patient){
         Patient updatedPatient = patientService.updatePatient(id, patient);

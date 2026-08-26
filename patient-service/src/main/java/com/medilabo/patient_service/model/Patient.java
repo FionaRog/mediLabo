@@ -11,6 +11,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+/**
+ * Represents a patient managed by the application.
+ * This entity is persisted in the {@code patients} table.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
