@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * REST controller responsible for patient management.
  * Provides endpoints to retrieve, create and update patients.
@@ -19,6 +21,16 @@ public class PatientController {
 
     public PatientController(IPatientService patientService) {
         this.patientService = patientService;
+    }
+
+    /**
+     * Retrieves all patients.
+     *
+     * @return a response containing the list of all patients
+     */
+    @GetMapping
+    public ResponseEntity<List<Patient>> getAllPatients(){
+        return ResponseEntity.ok(patientService.findAllPatients());
     }
 
     /**

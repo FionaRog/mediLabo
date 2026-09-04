@@ -2,6 +2,8 @@ package com.medilabo.patient_service.service;
 
 import com.medilabo.patient_service.model.Patient;
 
+import java.util.List;
+
 /**
  * Defines operations for managing patients.
  */
@@ -31,4 +33,11 @@ public interface IPatientService {
      * @return the patient matching the given ID
      */
     Patient findPatientById(Integer id);
+
+    /**
+     * Retrieves all patients.
+     *
+     * @return the list of all patients
+     */
+    List<Patient> findAllPatients();
 }

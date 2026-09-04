@@ -6,6 +6,8 @@ import com.medilabo.patient_service.repository.PatientRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Service implementation for patient management.
  * Handles patient retrieval, creation and update operations.
@@ -18,6 +20,16 @@ public class PatientService implements IPatientService {
 
     public PatientService(PatientRepository patientRepository) {
         this.patientRepository = patientRepository;
+    }
+
+    /**
+     * Retrieves all patients.
+     *
+     * @return the list of all patients
+     */
+    @Override
+    public List<Patient> findAllPatients() {
+        return patientRepository.findAll();
     }
 
     /**
