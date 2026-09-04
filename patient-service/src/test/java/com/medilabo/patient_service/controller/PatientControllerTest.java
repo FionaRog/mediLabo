@@ -1,8 +1,7 @@
 package com.medilabo.patient_service.controller;
 
+import com.medilabo.patient_service.dto.PatientDto;
 import com.medilabo.patient_service.exception.PatientNotFoundException;
-import com.medilabo.patient_service.model.Patient;
-import com.medilabo.patient_service.model.enums.Gender;
 import com.medilabo.patient_service.service.IPatientService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,14 +35,14 @@ public class PatientControllerTest {
     @Test
     @DisplayName("Should display Patient when ID is given")
     void displayPatientById() throws Exception {
-        Patient patient = new Patient();
-        patient.setId(1);
-        patient.setFirstname("John");
-        patient.setLastname("Doe");
-        patient.setAddress("test address");
-        patient.setGender(Gender.F);
+        PatientDto patientDto = new PatientDto();
+        patientDto.setId(1);
+        patientDto.setFirstname("John");
+        patientDto.setLastname("Doe");
+        patientDto.setAddress("test address");
+        patientDto.setGender("F");
 
-        when(patientService.findPatientById(1)).thenReturn(patient);
+        when(patientService.findPatientById(1)).thenReturn(patientDto);
 
         mockMvc.perform(get("/patients/{id}",1))
                 .andExpect(status().isOk())
@@ -71,17 +70,17 @@ public class PatientControllerTest {
     @Test
     @DisplayName("Should return Patient when Patient is created")
     void displayAddedPatient() throws Exception {
-        Patient patient = new Patient();
-        patient.setFirstname("John");
-        patient.setLastname("Doe");
-        patient.setDateOfBirth(LocalDate.of(1999,01,01));
-        patient.setGender(Gender.M);
+        PatientDto patientDto = new PatientDto();
+        patientDto.setFirstname("John");
+        patientDto.setLastname("Doe");
+        patientDto.setDateOfBirth(LocalDate.of(1999,01,01));
+        patientDto.setGender("M");
 
-        when(patientService.addNewPatient(any(Patient.class))).thenReturn(patient);
+        when(patientService.addNewPatient(any(PatientDto.class))).thenReturn(patientDto);
 
         mockMvc.perform(post("/patients")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(patient)))
+                        .content(objectMapper.writeValueAsString(patientDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.firstname").value("John"))
                 .andExpect(jsonPath("$.lastname").value("Doe"));
@@ -95,18 +94,18 @@ public class PatientControllerTest {
     @Test
     @DisplayName("Should return Patient when Patient is updated")
     void displayUpdatedPatient() throws Exception {
-        Patient patient = new Patient();
-        patient.setId(1);
-        patient.setFirstname("John");
-        patient.setLastname("Doe");
-        patient.setDateOfBirth(LocalDate.of(1999,01,01));
-        patient.setGender(Gender.M);
+        PatientDto patientDto = new PatientDto();
+        patientDto.setId(1);
+        patientDto.setFirstname("John");
+        patientDto.setLastname("Doe");
+        patientDto.setDateOfBirth(LocalDate.of(1999,01,01));
+        patientDto.setGender("M");
 
-        when(patientService.updatePatient(eq(1), any(Patient.class))).thenReturn(patient);
+        when(patientService.updatePatient(eq(1), any(PatientDto.class))).thenReturn(patientDto);
 
         mockMvc.perform(put("/patients/{id}",1)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(patient)))
+                        .content(objectMapper.writeValueAsString(patientDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstname").value("John"))
                 .andExpect(jsonPath("$.lastname").value("Doe"));
@@ -116,6 +115,6 @@ public class PatientControllerTest {
                 p.getFirstname().equals("John")
                 && p.getLastname().equals("Doe")
                 && p.getDateOfBirth().equals(LocalDate.of(1999,01,01))
-                && p.getGender() == Gender.M));
+                && p.getGender().equals("M")));
     }
 }

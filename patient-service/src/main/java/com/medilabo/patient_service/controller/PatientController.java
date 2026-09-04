@@ -1,5 +1,6 @@
 package com.medilabo.patient_service.controller;
 
+import com.medilabo.patient_service.dto.PatientDto;
 import com.medilabo.patient_service.model.Patient;
 import com.medilabo.patient_service.service.IPatientService;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class PatientController {
      * @return a response containing the list of all patients
      */
     @GetMapping
-    public ResponseEntity<List<Patient>> getAllPatients(){
+    public ResponseEntity<List<PatientDto>> getAllPatients(){
         return ResponseEntity.ok(patientService.findAllPatients());
     }
 
@@ -40,21 +41,21 @@ public class PatientController {
      * @return a response containing the requested patient
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Patient> getPatientById(@PathVariable Integer id){
-       Patient patient = patientService.findPatientById(id);
+    public ResponseEntity<PatientDto> getPatientById(@PathVariable Integer id){
+       PatientDto patientDto = patientService.findPatientById(id);
 
-       return ResponseEntity.ok(patient);
+       return ResponseEntity.ok(patientDto);
     }
 
     /**
      * Creates a new patient.
      *
-     * @param patient the patient information to create
+     * @param patientDto the patient information to create
      * @return a response containing the created patient with HTTP status 201
      */
     @PostMapping
-    public ResponseEntity<Patient> createPatient(@Valid @RequestBody Patient patient){
-        Patient newPatient = patientService.addNewPatient(patient);
+    public ResponseEntity<PatientDto> createPatient(@Valid @RequestBody PatientDto patientDto){
+        PatientDto newPatient = patientService.addNewPatient(patientDto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -65,12 +66,12 @@ public class PatientController {
      * Updates an existing patient.
      *
      * @param id the ID of the patient to update
-     * @param patient the new patient information
+     * @param patientDto the new patient information
      * @return a response containing the updated patient
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable Integer id, @Valid @RequestBody Patient patient){
-        Patient updatedPatient = patientService.updatePatient(id, patient);
+    public ResponseEntity<PatientDto> updatePatient(@PathVariable Integer id, @Valid @RequestBody PatientDto patientDto){
+        PatientDto updatedPatient = patientService.updatePatient(id, patientDto);
 
         return ResponseEntity.ok(updatedPatient);
     }
