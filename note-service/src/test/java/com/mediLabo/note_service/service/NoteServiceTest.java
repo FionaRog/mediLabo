@@ -47,6 +47,7 @@ public class NoteServiceTest {
         noteDto.setNote("This is a test");
         noteDto.setPatId(1);
         noteDto.setPatient("Test1");
+        noteDto.setId("abc");
 
         when(noteRepository.findByPatId(1)).thenReturn(List.of(note));
         when(noteMapper.toDto(note)).thenReturn(noteDto);
@@ -67,6 +68,7 @@ public class NoteServiceTest {
         noteDto.setNote("This is a test");
         noteDto.setPatId(1);
         noteDto.setPatient("Test");
+        noteDto.setId("abc");
 
         Note note = new Note();
         note.setNote("This is a test");

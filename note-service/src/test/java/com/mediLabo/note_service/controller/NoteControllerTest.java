@@ -39,11 +39,13 @@ public class NoteControllerTest {
         noteDto.setPatient("Test");
         noteDto.setPatId(1);
         noteDto.setNote("A first note");
+        noteDto.setId("abc");
 
         NoteDto noteDto2 = new NoteDto();
         noteDto2.setPatient("Test");
         noteDto2.setPatId(1);
         noteDto2.setNote("A second note");
+        noteDto2.setId("abcd");
 
         when(noteService.getNotesByPatientId(1)).thenReturn(Arrays.asList(noteDto, noteDto2));
 

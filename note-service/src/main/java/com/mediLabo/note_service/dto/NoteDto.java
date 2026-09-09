@@ -17,6 +17,8 @@ import lombok.Setter;
 @Setter
 public class NoteDto {
 
+    private String id;
+
     @NotBlank(message = "Note is required")
     private String note;
 

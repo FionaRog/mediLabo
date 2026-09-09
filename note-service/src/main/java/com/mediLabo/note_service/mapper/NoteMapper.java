@@ -19,6 +19,7 @@ public class NoteMapper {
      */
     public NoteDto toDto(Note note){
         NoteDto noteDto = new NoteDto();
+        noteDto.setId(note.getId());
         noteDto.setNote(note.getNote());
         noteDto.setPatId(note.getPatId());
         noteDto.setPatient(note.getPatient());
@@ -33,6 +34,7 @@ public class NoteMapper {
      */
     public Note toEntity(NoteDto noteDto){
         Note note = new Note();
+        note.setId(noteDto.getId());
         note.setNote(noteDto.getNote());
         note.setPatient(noteDto.getPatient());
         note.setPatId(noteDto.getPatId());

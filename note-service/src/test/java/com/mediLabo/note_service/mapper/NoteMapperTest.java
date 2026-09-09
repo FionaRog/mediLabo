@@ -18,6 +18,7 @@ public class NoteMapperTest {
         noteDto.setPatient("Test");
         noteDto.setNote("This is a test");
         noteDto.setPatId(1);
+        noteDto.setId("abc");
 
         Note toNote = noteMapper.toEntity(noteDto);
 
@@ -33,6 +34,7 @@ public class NoteMapperTest {
         note.setPatient("Test");
         note.setNote("This is a test");
         note.setPatId(1);
+        note.setId("abc");
 
         NoteDto toNoteDto = noteMapper.toDto(note);
 
