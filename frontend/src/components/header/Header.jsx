@@ -1,4 +1,6 @@
 
+import './Header.css'
+
 function Header({ isAuthenticated, onLogout }) {
     return (
         <header>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { login } from '../services/authService.js'
+import { login } from '../../services/authService.js'
+import './Login.css'
 
 function Login({ onLoginSuccess }) {
     const [username, setUsername] = useState('')
@@ -27,8 +28,8 @@ function Login({ onLoginSuccess }) {
         <main>
             <h2>Connexion</h2>
 
-            <form onSubmit={handleSubmit}>
-                <div>
+            <form className="login-form" onSubmit={handleSubmit}>
+                <div className="login-field">
                     <label htmlFor="username">Identifiant</label>
                     <input
                         id="username"
@@ -39,7 +40,7 @@ function Login({ onLoginSuccess }) {
                     />
                 </div>
 
-                <div>
+                <div className="login-field">
                     <label htmlFor="password">Mot de passe</label>
                     <input
                         id="password"

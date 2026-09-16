@@ -7,6 +7,7 @@ import com.mediLabo.note_service.repository.NoteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -44,6 +45,8 @@ public class NoteService implements INoteService {
         log.debug("Creating note for patient with id {}", noteDto.getPatId());
 
         Note note = noteMapper.toEntity(noteDto);
+
+        note.setCreatedAt(LocalDateTime.now());
 
         Note savedNote = noteRepository.insert(note);
 

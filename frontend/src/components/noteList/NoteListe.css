@@ -1,0 +1,19 @@
+/* Notes */
+
+.note-section {
+    margin-top: 10px;
+    padding: 10px;
+
+    background-color: #ebedf8;
+
+    border: 1px solid #274977;
+    border-radius: 10px;
+}
+
+.note-item {
+    margin-bottom: 20px;
+}
+
+.note-content {
+    white-space: pre-wrap;
+}

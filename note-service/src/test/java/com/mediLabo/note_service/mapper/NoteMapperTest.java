@@ -5,7 +5,10 @@ import com.mediLabo.note_service.model.Note;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class NoteMapperTest {
 
@@ -19,12 +22,16 @@ public class NoteMapperTest {
         noteDto.setNote("This is a test");
         noteDto.setPatId(1);
         noteDto.setId("abc");
+        noteDto.setCreatedAt(LocalDateTime.now());
 
         Note toNote = noteMapper.toEntity(noteDto);
 
         assertEquals(noteDto.getPatient(), toNote.getPatient());
         assertEquals(noteDto.getNote(), toNote.getNote());
         assertEquals(noteDto.getPatId(), toNote.getPatId());
+
+        assertNull(toNote.getId());
+        assertNull(toNote.getCreatedAt());
     }
 
     @Test
@@ -35,11 +42,14 @@ public class NoteMapperTest {
         note.setNote("This is a test");
         note.setPatId(1);
         note.setId("abc");
+        note.setCreatedAt(LocalDateTime.now());
 
         NoteDto toNoteDto = noteMapper.toDto(note);
 
         assertEquals(note.getPatient(), toNoteDto.getPatient());
         assertEquals(note.getNote(), toNoteDto.getNote());
         assertEquals(note.getPatId(), toNoteDto.getPatId());
+        assertEquals(note.getId(), toNoteDto.getId());
+        assertEquals(note.getCreatedAt(), toNoteDto.getCreatedAt());
     }
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { addPatient, updatePatient } from '../services/patientService.js'
+import { addPatient, updatePatient } from '../../services/patientService.js'
+import './PatientForm.css'
 
 function PatientForm({
     credentials,
@@ -69,15 +70,15 @@ function PatientForm({
     }
 
     return (
-        <main>
+        <div className="patient-form-container">
             <h2>
                 {patientToEdit
                     ? 'Modifier un patient'
                     : 'Ajouter un patient'}
             </h2>
 
-            <form onSubmit={handleSubmit}>
-                <div>
+            <form className="patient-form" onSubmit={handleSubmit}>
+                <div className="form-group">
                     <label htmlFor="firstname">Prénom</label>
                     <input
                         id="firstname"
@@ -88,7 +89,7 @@ function PatientForm({
                     />
                 </div>
 
-                <div>
+                <div className="form-group">
                     <label htmlFor="lastname">Nom</label>
                     <input
                         id="lastname"
@@ -99,7 +100,7 @@ function PatientForm({
                     />
                 </div>
 
-                <div>
+                <div className="form-group">
                     <label htmlFor="dateOfBirth">Date de naissance</label>
                     <input
                         id="dateOfBirth"
@@ -111,7 +112,7 @@ function PatientForm({
                     />
                 </div>
 
-                <div>
+                <div className="form-group">
                     <label htmlFor="gender">Genre</label>
                     <select
                         id="gender"
@@ -125,7 +126,7 @@ function PatientForm({
                     </select>
                 </div>
 
-                <div>
+                <div className="form-group">
                     <label htmlFor="address">Adresse</label>
                     <input
                         id="address"
@@ -135,7 +136,7 @@ function PatientForm({
                     />
                 </div>
 
-                <div>
+                <div className="form-group">
                     <label htmlFor="telephone">Téléphone</label>
                     <input
                         id="telephone"
@@ -151,7 +152,7 @@ function PatientForm({
                     {patientToEdit ? 'Modifier' : 'Ajouter'}
                 </button>
             </form>
-        </main>
+        </div>
     )
 }
 

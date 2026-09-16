@@ -1,0 +1,40 @@
+/* Cartes patient */
+
+.patient-card {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 24px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #164383;
+    border-radius: 10px;
+}
+
+.patient-card p {
+    margin: 8px 0;
+}
+
+.patient-card strong {
+    color: #11379f;
+}
+
+
+/* Formulaire de modification dans une carte patient */
+
+.patient-card .patient-form-container {
+    max-width: none;
+    margin: 15px 0 0;
+}
+
+.patient-card .patient-form {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 15px;
+
+    background-color: #f5f7fb;
+
+    border: none;
+    border-radius: 8px;
+}

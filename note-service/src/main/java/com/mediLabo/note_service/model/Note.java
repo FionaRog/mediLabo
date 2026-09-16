@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 /**
  * Represents a medical note associated with a patient.
  * <p>
@@ -25,5 +27,7 @@ public class Note {
     private Integer patId;
 
     private String patient;
+
+    private LocalDateTime createdAt;
 
 }

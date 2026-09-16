@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import './App.css'
-import Header from './components/Header.jsx'
-import PatientList from './components/PatientList.jsx'
-import Login from './components/Login.jsx'
+import Header from './components/header/Header.jsx'
+import PatientList from './components/patientList/PatientList.jsx'
+import Login from './components/login/Login.jsx'
 
 function App() {
     const [credentials, setCredentials] = useState(null)

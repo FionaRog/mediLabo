@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Data Transfer Object used to transfer medical note data between
  * the API layer and the service layer.
@@ -27,5 +29,8 @@ public class NoteDto {
 
     @NotBlank(message = "Patient name is required")
     private String patient;
+
+    private LocalDateTime createdAt;
+
 
 }

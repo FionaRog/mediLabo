@@ -1,0 +1,43 @@
+/* Formulaire patient */
+
+.patient-form-container {
+    max-width: 500px;
+    margin: 20px 0 30px;
+}
+
+.patient-form-container h2 {
+    margin-bottom: 15px;
+}
+
+.patient-form {
+    padding: 20px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #274977;
+    border-radius: 10px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 8px 10px;
+
+    border: 1px solid #b8c5d8;
+    border-radius: 5px;
+
+    background-color: #ffffff;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #334e89;
+}
+
+.patient-form button {
+    margin-top: 8px;
+}

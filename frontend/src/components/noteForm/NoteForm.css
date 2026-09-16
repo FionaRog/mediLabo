@@ -1,0 +1,11 @@
+.note-textarea {
+    width: 90%;
+    min-height: 80px;
+
+    padding: 10px;
+
+    border: 1px solid #164383;
+    border-radius: 5px;
+
+    resize: vertical;
+}
