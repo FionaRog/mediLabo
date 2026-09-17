@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getAllPatients } from '../../services/patientService.js'
 import PatientForm from '../patientForm/PatientForm.jsx'
+import Modal from '../modal/Modal.jsx'
 import NoteListe from '../noteList/NoteListe.jsx'
 import './PatientList.css'
 
@@ -55,30 +56,23 @@ function PatientList({ credentials }) {
         <main>
             <h2>Patients</h2>
 
-            {showForm ? (
-                <button
-                    type="button"
-                    onClick={() => setShowForm(false)}
-                >
-                    Annuler
-                </button>
-            ) : (
-                <button
-                    type="button"
-                    onClick={() => {
-                        setSelectedPatient(null)
-                        setShowForm(true)
-                    }}
-                >
-                    Ajouter un patient
-                </button>
-            )}
+            <button
+                type="button"
+                onClick={() => {
+                    setSelectedPatient(null)
+                    setShowForm(true)
+                }}
+            >
+                Ajouter un patient
+            </button>
 
             {showForm && (
-                <PatientForm
-                    credentials={credentials}
-                    onPatientAdded={handlePatientAdded}
-                />
+                <Modal onClose={() => setShowForm(false)}>
+                    <PatientForm
+                        credentials={credentials}
+                        onPatientAdded={handlePatientAdded}
+                    />
+                </Modal>
             )}
 
             {patients.map(patient => (
@@ -120,16 +114,10 @@ function PatientList({ credentials }) {
                         type="button"
                         onClick={() => {
                             setShowForm(false)
-                            setSelectedPatient(
-                                selectedPatient?.id === patient.id
-                                    ? null
-                                    : patient
-                            )
+                            setSelectedPatient(patient)
                         }}
                     >
-                        {selectedPatient?.id === patient.id
-                            ? 'Annuler'
-                            : 'Modifier'}
+                        Modifier
                     </button>
 
                     <button
@@ -147,15 +135,6 @@ function PatientList({ credentials }) {
                             : 'Voir les notes'}
                     </button>
 
-                    {selectedPatient?.id === patient.id && (
-                        <PatientForm
-                            key={selectedPatient.id}
-                            credentials={credentials}
-                            patientToEdit={selectedPatient}
-                            onPatientUpdated={handlePatientUpdated}
-                        />
-                    )}
-
                     {patientForNotes?.id === patient.id && (
                         <NoteListe
                             patient={patientForNotes}
@@ -164,6 +143,18 @@ function PatientList({ credentials }) {
                     )}
                 </div>
             ))}
+
+            {selectedPatient && (
+                <Modal onClose={() => setSelectedPatient(null)}>
+                    <PatientForm
+                        key={selectedPatient.id}
+                        credentials={credentials}
+                        patientToEdit={selectedPatient}
+                        onPatientUpdated={handlePatientUpdated}
+                    />
+                </Modal>
+            )}
+
         </main>
     )
 }

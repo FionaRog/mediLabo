@@ -36,6 +36,16 @@ function NoteListe({ patient, credentials }) {
         setNoteForm(false)
     }
 
+    const formatDate = (date) => {
+        return new Date(date).toLocaleString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
     return (
         <div className="note-section">
             <h3>Notes pour {patient.firstname} {patient.lastname}</h3> 
@@ -43,7 +53,14 @@ function NoteListe({ patient, credentials }) {
             {notes.map(note => (
                 <div key={note.id} className="note-item">
                     <p className="note-content">
-                        <strong>Note : </strong> {note.note}</p>
+                        <strong>Note : </strong> {note.note}
+                    </p>
+
+                  {note.createdAt && (
+                    <p className="note-date">
+                        Ajoutée le {formatDate(note.createdAt)}
+                    </p>
+                  )}
                 </div>
             ))}
 
