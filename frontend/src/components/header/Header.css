@@ -5,7 +5,8 @@ header {
 
     padding: 10px 20px;
 
-    background-color: #164383;
+    background-color: rgba(38, 78, 208, 0.70);
+    backdrop-filter: blur(8px);
     color: #ffffff;
 }
 

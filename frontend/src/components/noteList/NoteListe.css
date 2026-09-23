@@ -4,7 +4,8 @@
     margin-top: 10px;
     padding: 10px;
 
-    background-color: #ebedf8;
+    background-color: rgba(210, 229, 249, 0.8);
+    backdrop-filter: blur(8px);
 
     border: 1px solid #274977;
     border-radius: 10px;

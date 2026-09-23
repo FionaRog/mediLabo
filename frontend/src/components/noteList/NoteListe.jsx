@@ -3,7 +3,7 @@ import {getNotesByPatientId } from '../../services/noteService.js'
 import NoteForm from '../noteForm/NoteForm.jsx'
 import './NoteListe.css'
 
-function NoteListe({ patient, credentials }) {
+function NoteListe({ patient, credentials, onRiskUpdate }) {
     const [notes, setNotes] = useState(null)    
     const [error, setError] = useState(null)
     const [noteForm, setNoteForm] = useState(false)
@@ -34,6 +34,10 @@ function NoteListe({ patient, credentials }) {
         ])
 
         setNoteForm(false)
+
+        if (onRiskUpdate) {
+            onRiskUpdate(patient.id)
+        }
     }
 
     const formatDate = (date) => {

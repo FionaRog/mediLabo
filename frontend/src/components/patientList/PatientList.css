@@ -1,13 +1,16 @@
 /* Cartes patient */
 
 .patient-card {
-    max-width: 700px;
-    margin: 20px auto;
+    position: relative;
+
+    width: 100%;
+    box-sizing: border-box;
     padding: 24px;
 
-    background-color: #ffffff;
+    background-color: rgba(238, 248, 251, 0.8);
+    backdrop-filter: blur(8px);
 
-    border: 1px solid #164383;
+    border: 2px solid #164383;
     border-radius: 10px;
 }
 
@@ -16,7 +19,60 @@
 }
 
 .patient-card strong {
-    color: #11379f;
+    color: #0a3d55;
+}
+
+.patient-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+
+    max-width: 1100px;
+    margin: 20px auto;
+}
+
+.patient-row.with-notes {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.risk-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 80px;
+    min-height: 80px;
+    padding: 8px;
+
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.risk-none {
+    background-color: #70e96b;
+    color: #122d0f;
+}
+
+.risk-borderline {
+    background-color: #f6e867;
+    color: #544c27;
+}
+
+.risk-in_danger {
+    background-color: #eda451;
+    color: #4f2b10;
+}
+
+.risk-early_onset {
+    background-color: #eb6e6e;
+    color: #3f1010;
 }
 
 
@@ -37,4 +93,11 @@
 
     border: none;
     border-radius: 8px;
+}
+
+
+@media (max-width: 768px) {
+    .patient-row.with-notes {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }

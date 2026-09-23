@@ -36,14 +36,14 @@ button {
     border: none;
     border-radius: 5px;
 
-    background-color: #334e89;
+    background-color: #266da8;
     color: #ffffff;
 
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #408983;
+    background-color: #2b8c9d;
 }
 
 
@@ -61,4 +61,24 @@ button:hover {
 
     font-weight: bold;
     color: #1d4ed8;
+}
+
+.app-background {
+    position: relative;
+    min-height: 100vh;
+}
+
+.app-background .grainient-container {
+    position: absolute;
+    inset: 0;
+}
+
+.app-content {
+    position: relative;
+    z-index: 1;
+}
+
+header {
+    position: relative;
+    z-index: 1;
 }

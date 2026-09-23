@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getAllPatients } from '../../services/patientService.js'
+import { getRiskByPatientId } from '../../services/riskService.js'
 import PatientForm from '../patientForm/PatientForm.jsx'
 import Modal from '../modal/Modal.jsx'
 import NoteListe from '../noteList/NoteListe.jsx'
@@ -11,11 +12,31 @@ function PatientList({ credentials }) {
     const [showForm, setShowForm] = useState(false)
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patientForNotes, setPatientForNotes] = useState(null)
+    const [risks, setRisks] = useState({})
 
     useEffect(() => {
         getAllPatients(credentials)
             .then(patientsData => {
                 setPatients(patientsData)
+
+                const riskPromises = patientsData.map(patient =>
+                    getRiskByPatientId(patient.id, credentials)
+                )
+
+                return Promise.all(riskPromises)
+                .then(riskLevels => ({
+                    patientsData,
+                    riskLevels
+                }))
+            })
+            .then(({ patientsData, riskLevels }) => {
+                const riskByPatient = {}
+
+                patientsData.forEach((patient, index) => {
+                    riskByPatient[patient.id] = riskLevels[index]
+                })
+
+                setRisks(riskByPatient)
             })
             .catch(fetchError => {
                 console.error(fetchError)
@@ -37,6 +58,8 @@ function PatientList({ credentials }) {
             newPatient
         ])
 
+        handleRiskUpdate(newPatient.id)
+
         setShowForm(false)
     }
 
@@ -49,7 +72,37 @@ function PatientList({ credentials }) {
             )
         )
 
+        handleRiskUpdate(updatedPatient.id)
+
         setSelectedPatient(null)
+    }
+
+    function getRiskLabel(riskLevel) {
+        switch (riskLevel) {
+            case 'NONE':
+                return 'Aucun risque'
+            case 'BORDERLINE':
+                return 'Risque limité'
+            case 'IN_DANGER':
+                return 'En danger'
+            case 'EARLY_ONSET':
+                return 'Début précoce'
+            default:
+                return 'Non évalué'
+        }
+    }
+
+    function handleRiskUpdate(patientId) {
+        getRiskByPatientId(patientId, credentials)
+            .then(riskLevel => {
+                setRisks(previousRisks => ({
+                    ...previousRisks,
+                    [patientId]: riskLevel
+                }))
+            })
+            .catch(fetchError => {
+                console.error(fetchError)
+        })
     }
 
     return (
@@ -76,10 +129,19 @@ function PatientList({ credentials }) {
             )}
 
             {patients.map(patient => (
-                <div
-                    key={patient.id}
-                    className="patient-card"
-                >
+            <div 
+                key={patient.id}
+                className={`patient-row ${
+                    patientForNotes?.id === patient.id ? 'with-notes' : ''
+            }`}
+            >
+
+                <div className="patient-card">
+
+                    <span className={`risk-badge risk-${risks[patient.id]?.toLowerCase()}`}>
+                        {getRiskLabel(risks[patient.id])}
+                    </span>
+
                     <p>
                         <strong>Prénom : </strong>
                         {patient.firstname}
@@ -135,13 +197,16 @@ function PatientList({ credentials }) {
                             : 'Voir les notes'}
                     </button>
 
-                    {patientForNotes?.id === patient.id && (
+                </div>
+
+                {patientForNotes?.id === patient.id && (
                         <NoteListe
                             patient={patientForNotes}
                             credentials={credentials}
+                            onRiskUpdate={handleRiskUpdate}
                         />
                     )}
-                </div>
+            </div>
             ))}
 
             {selectedPatient && (
