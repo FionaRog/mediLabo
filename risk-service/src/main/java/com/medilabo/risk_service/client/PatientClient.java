@@ -1,6 +1,7 @@
 package com.medilabo.risk_service.client;
 
 import com.medilabo.risk_service.dto.PatientDto;
+import com.medilabo.risk_service.exception.PatientNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,7 @@ public class PatientClient {
      *
      * @param id the identifier of the patient to retrieve
      * @return the patient information required for risk assessment
+     * @throws PatientNotFoundException if the patient service returns a 404 response
      */
     public PatientDto getPatientById(Integer id) {
 
@@ -48,6 +50,12 @@ public class PatientClient {
                 .get()
                 .uri("/patients/{id}", id)
                 .retrieve()
+                .onStatus(
+                        status -> status.value() == 404,
+                        (request, response) -> {
+                            throw new PatientNotFoundException(id);
+                        }
+                )
                 .body(PatientDto.class);
     }
 
