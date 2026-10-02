@@ -1,5 +1,9 @@
 services:
 
+  #----------------------------------------------
+  # DATABASES
+  #----------------------------------------------
+
   mongodb:
     image: mongo:latest
     container_name: medilabo-mongodb
@@ -11,5 +15,91 @@ services:
       - mongodb-data:/data/db
       - ./note-service/docker/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
 
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql:
+    image: mysql:8.4
+    container_name: medilabo-mysql
+
+    environment:
+      MYSQL_DATABASE: patient
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  #----------------------------------------------
+  # MICROSERVICES
+  #----------------------------------------------
+
+  patient-service:
+    build:
+      context: ./patient-service
+      dockerfile: Dockerfile
+
+    container_name: medilabo-patient-service
+
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/patient
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
+  note-service:
+    build:
+      context: ./note-service
+      dockerfile: Dockerfile
+
+    container_name: medilabo-note-service
+
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/medilabo
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+    ports:
+      - "8082:8082"
+
+  risk-service:
+    build:
+      context: ./risk-service
+      dockerfile: Dockerfile
+
+    container_name: medilabo-risk-service
+
+    environment:
+      PATIENT_SERVICE_URL: http://patient-service:8080
+      NOTE_SERVICE_URL:  http://note-service:8082
+
+    depends_on:
+      - patient-service
+      - note-service
+
+    ports:
+      - "8083:8083"
+  #----------------------------------------------
+  # PERSISTENT VOLUMES
+  #----------------------------------------------
+
 volumes:
   mongodb-data:
+  mysql-data:
+
