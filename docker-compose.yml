@@ -8,9 +8,6 @@ services:
     image: mongo:latest
     container_name: medilabo-mongodb
 
-    ports:
-      - "27017:27017"
-
     volumes:
       - mongodb-data:/data/db
       - ./note-service/docker/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
@@ -51,15 +48,12 @@ services:
 
     environment:
       DB_URL: jdbc:mysql://mysql:3306/patient
-      DB_USERNAME: root
+      DB_USERNAME: ${MYSQL_ROOT_USERNAME}
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
     depends_on:
       mysql:
         condition: service_healthy
-
-    ports:
-      - "8080:8080"
 
   note-service:
     build:
@@ -75,9 +69,6 @@ services:
       mongodb:
         condition: service_healthy
 
-    ports:
-      - "8082:8082"
-
   risk-service:
     build:
       context: ./risk-service
@@ -87,14 +78,33 @@ services:
 
     environment:
       PATIENT_SERVICE_URL: http://patient-service:8080
-      NOTE_SERVICE_URL:  http://note-service:8082
+      NOTE_SERVICE_URL: http://note-service:8082
 
     depends_on:
       - patient-service
       - note-service
 
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+
+    container_name: medilabo-gateway
+
+    environment:
+      PATIENT_SERVICE_URL: http://patient-service:8080
+      NOTE_SERVICE_URL: http://note-service:8082
+      RISK_SERVICE_URL: http://risk-service:8083
+      APP_USERNAME: ${APP_USERNAME}
+      APP_PASSWORD: ${APP_PASSWORD}
+
+    depends_on:
+      - patient-service
+      - note-service
+      - risk-service
+
     ports:
-      - "8083:8083"
+      - "8081:8081"
   #----------------------------------------------
   # PERSISTENT VOLUMES
   #----------------------------------------------

@@ -23,10 +23,10 @@ function App() {
         <>            
             <div className="app-background">
             <Grainient
-                color1="#b8ecdb"
-                color2="#4a79f7"
-                color3="#2dc2c3"
-                timeSpeed={1.15}
+                color1="#fdfdfd"
+                color2="#acf0fb"
+                color3="#9bc1ff"
+                timeSpeed={0.15}
                 colorBalance={0}
                 warpStrength={1}
                 warpFrequency={5}

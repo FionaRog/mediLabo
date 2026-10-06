@@ -1,0 +1,299 @@
+# MédiLabo
+
+MédiLabo est une application permettant de gérer les données de patients et
+d'évaluer leur niveau de risque de développer un diabète à partir de leurs
+informations personnelles et des notes médicales associées.
+
+L'application repose sur une architecture en microservices composée de :
+
+- `gateway` : point d'entrée de l'application et gestion de l'authentification ;
+- `patient-service` : gestion des informations des patients, stockées dans MySQL ;
+- `note-service` : gestion des notes médicales, stockées dans MongoDB ;
+- `risk-service` : calcul du niveau de risque de diabète à partir des données
+  fournies par patient-service et note-service.
+
+Les microservices et les bases de données sont orchestrés avec Docker Compose.
+Le frontend React est lancé séparément.
+
+## Technologies
+
+### Backend
+
+- Java 21
+- Spring Boot
+- Spring Cloud Gateway
+- Spring Security
+- Spring Data JPA
+- Spring Data MongoDB
+- Maven
+
+### Frontend
+
+- React
+- Vite
+
+### Bases de données
+
+- MySQL
+- MongoDB
+
+### Conteneurisation
+
+- Docker
+- Docker Compose
+
+## Architecture
+
+L'application est composée de plusieurs services indépendants communiquant entre eux via le réseau Docker.
+
+| Composant | Port | Accessibilité |
+|---|---:|---|
+| Gateway | 8081 | Exposé sur l'hôte |
+| Patient Service | 8080 | Réseau Docker uniquement |
+| Note Service | 8082 | Réseau Docker uniquement |
+| Risk Service | 8083 | Réseau Docker uniquement |
+| MySQL | 3306 | Réseau Docker uniquement |
+| MongoDB | 27017 | Réseau Docker uniquement |
+
+### Communication entre les services
+
+Le client accède aux API par l'intermédiaire de la Gateway sur le port `8081`.
+
+La Gateway redirige ensuite les requêtes vers le microservice concerné :
+
+- `/patients/**` → `patient-service`
+- `/notes/**` → `note-service`
+- `/risk/**` → `risk-service`
+
+Le `risk-service` communique également avec `patient-service` et `note-service`
+afin de récupérer les informations nécessaires au calcul du niveau de risque.
+
+Dans l'environnement Docker, les services communiquent entre eux grâce aux noms
+définis dans `docker-compose.yml`, par exemple :
+
+`http://patient-service:8080`
+
+Les bases de données sont également accessibles aux microservices par leur nom
+de service Docker :
+
+- `mysql:3306`
+- `mongodb:27017`
+
+Les données de MySQL et MongoDB sont stockées dans des volumes Docker afin d'être
+conservées après l'arrêt ou la recréation des conteneurs.
+
+## Prérequis
+
+Pour lancer l'application, les outils suivants sont nécessaires :
+
+- Docker
+- Docker Compose
+- Node.js et npm pour le frontend
+
+Java, Maven, MySQL et MongoDB n'ont pas besoin d'être installés localement pour
+lancer le backend avec Docker : ils sont fournis par les images et conteneurs
+définis dans le projet.
+
+## Installation et lancement
+
+### 1. Cloner le projet
+
+Clonez le dépôt puis placez-vous à la racine du projet.
+
+### 2. Configurer les variables d'environnement
+
+Un fichier `.env.example` est fourni à la racine du projet.
+
+Créez un fichier `.env` à partir de ce modèle :
+
+```env
+MYSQL_ROOT_USERNAME=root
+MYSQL_ROOT_PASSWORD=your_mysql_password
+
+APP_USERNAME=your_app_username
+APP_PASSWORD=your_app_password
+```
+
+Remplacez les valeurs d'exemple par les valeurs souhaitées.
+
+Le fichier `.env` contient des informations sensibles et n'est pas versionné
+dans le dépôt Git.
+
+### 3. Lancer le backend
+
+Depuis la racine du projet, exécutez :
+
+```bash
+docker compose up -d --build
+```
+
+Cette commande construit les images Docker des microservices puis démarre
+l'ensemble des services nécessaires à l'application.
+
+La Gateway est ensuite accessible à l'adresse :
+
+`http://localhost:8081`
+
+Les requêtes adressées aux API doivent passer par la Gateway et nécessitent
+l'authentification configurée avec les variables `APP_USERNAME` et
+`APP_PASSWORD`.
+
+
+### 4. Vérifier les conteneurs
+
+Pour vérifier que les différents conteneurs sont démarrés :
+
+```bash
+docker compose ps
+```
+
+Les bases de données doivent notamment apparaître comme `healthy` avant que
+les microservices qui en dépendent puissent démarrer.
+
+
+### 5. Arrêter le backend
+
+Pour arrêter et supprimer les conteneurs :
+
+```bash
+docker compose down
+```
+
+Les volumes Docker ne sont pas supprimés par cette commande. Les données
+MySQL et MongoDB sont donc conservées pour le prochain démarrage.
+
+## Lancement du frontend
+
+Le frontend React est lancé séparément des services Docker.
+
+Depuis un terminal, placez-vous dans le dossier du frontend :
+
+```bash
+cd frontend
+```
+
+Installez les dépendances :
+
+```bash
+npm install
+```
+
+Le frontend est configuré pour communiquer avec la Gateway grâce à la variable
+d'environnement suivante :
+
+```env
+VITE_API_URL=http://localhost:8081
+```
+
+Démarrez ensuite le serveur de développement :
+
+```bash
+npm run dev
+```
+
+Vite affiche alors dans le terminal l'adresse permettant d'accéder à
+l'interface de l'application.
+
+Pour utiliser l'application complète, les conteneurs Docker du backend doivent
+donc être démarrés en parallèle.
+
+## Authentification et accès aux API
+
+L'accès aux API est sécurisé au niveau de la Gateway avec Spring Security.
+
+Les identifiants utilisés pour l'authentification sont définis dans le fichier
+`.env` à la racine du projet :
+
+```env
+APP_USERNAME=your_app_username
+APP_PASSWORD=your_app_password
+```
+
+Les requêtes vers les différents microservices doivent passer par la Gateway,
+accessible sur le port `8081`.
+
+Les principales routes sont :
+
+- `http://localhost:8081/patients/**` pour la gestion des patients ;
+- `http://localhost:8081/notes/**` pour la gestion des notes médicales ;
+- `http://localhost:8081/risk/**` pour l'évaluation du niveau de risque.
+
+Les microservices ne sont pas directement exposés sur l'hôte. Les échanges
+entre la Gateway, les microservices et les bases de données sont réalisés
+sur le réseau Docker interne.
+
+## Tests
+
+Les microservices disposent de tests permettant de vérifier le comportement
+des différentes couches de l'application.
+
+Les tests d'un microservice peuvent être exécutés depuis son répertoire avec :
+
+```bash
+mvn test
+```
+
+Ils peuvent également être exécutés avec le Maven Wrapper :
+
+```bash
+./mvnw test
+```
+
+Sous Windows :
+
+```powershell
+.\mvnw.cmd test
+```
+
+Lors de la construction des images Docker, les tests ne sont pas exécutés,
+afin d'éviter de les relancer à chaque construction de l'image. Ils doivent
+donc être exécutés séparément avant la construction ou le déploiement de
+l'application.
+
+## Green Code et pistes d'amélioration
+
+Dans le cadre de la politique environnementale du projet, plusieurs pratiques
+ont déjà été intégrées à MédiLabo et différentes pistes d'amélioration peuvent
+être envisagées afin de limiter les ressources nécessaires à son fonctionnement.
+
+### Mesures déjà mises en œuvre
+
+- Utilisation de Dockerfiles multi-stage afin de ne conserver dans les images
+  finales que les éléments nécessaires à l'exécution des microservices.
+- Utilisation d'images contenant un JRE pour l'exécution, plutôt qu'un JDK
+  complet.
+- Optimisation du cache Docker en séparant le téléchargement des dépendances
+  Maven de la copie du code source.
+- Utilisation de fichiers `.dockerignore` afin de limiter les fichiers envoyés
+  au moteur Docker lors de la construction des images.
+
+### Suggestions d'actions
+
+Afin de poursuivre la démarche Green Code, plusieurs actions pourraient être
+étudiées :
+
+- **Mesurer avant d'optimiser** : suivre la consommation CPU, mémoire et les
+  temps d'exécution des différents microservices afin d'identifier les
+  composants les plus consommateurs de ressources.
+
+- **Adapter les ressources des conteneurs** : dimensionner les ressources CPU
+  et mémoire en fonction des besoins réels de chaque microservice afin d'éviter
+  le surdimensionnement.
+
+- **Optimiser les échanges entre microservices** : limiter les appels réseau
+  inutiles et la quantité de données transférées entre les services.
+
+- **Optimiser les accès aux bases de données** : analyser les requêtes et
+  utiliser des index adaptés afin de limiter les traitements et lectures
+  inutiles.
+
+- **Limiter les données retournées par les API** : utiliser des DTO adaptés et,
+  lorsque cela devient nécessaire, de la pagination afin de ne transférer que
+  les informations utiles au client.
+
+- **Optimiser le frontend** : limiter les dépendances inutiles et la taille des
+  ressources JavaScript, CSS et graphiques téléchargées par le navigateur.
+
+- **Suivre l'évolution de l'application** : mesurer les effets des
+  optimisations mises en place afin de vérifier qu'elles apportent réellement
+  une réduction des ressources utilisées.
