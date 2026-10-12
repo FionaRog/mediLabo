@@ -1,4 +1,4 @@
-package com.mediLabo.note_service.dto;
+package com.medilabo.note_service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

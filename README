@@ -110,6 +110,9 @@ Créez un fichier `.env` à partir de ce modèle :
 MYSQL_ROOT_USERNAME=root
 MYSQL_ROOT_PASSWORD=your_mysql_password
 
+MYSQL_APP_USERNAME=medilabo_app
+MYSQL_APP_PASSWORD=your_mysql_app_password
+
 APP_USERNAME=your_app_username
 APP_PASSWORD=your_app_password
 ```

@@ -1,4 +1,4 @@
-package com.mediLabo.note_service.model;
+package com.medilabo.note_service.model;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -3,7 +3,7 @@ import { getAllPatients } from '../../services/patientService.js'
 import { getRiskByPatientId } from '../../services/riskService.js'
 import PatientForm from '../patientForm/PatientForm.jsx'
 import Modal from '../modal/Modal.jsx'
-import NoteListe from '../noteList/NoteListe.jsx'
+import NoteList from '../noteList/NoteList.jsx'
 import './PatientList.css'
 
 function PatientList({ credentials }) {
@@ -13,30 +13,30 @@ function PatientList({ credentials }) {
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patientForNotes, setPatientForNotes] = useState(null)
     const [risks, setRisks] = useState({})
+    const [riskErrors, setRiskErrors] = useState({})
 
     useEffect(() => {
         getAllPatients(credentials)
             .then(patientsData => {
                 setPatients(patientsData)
 
-                const riskPromises = patientsData.map(patient =>
+                patientsData.forEach(patient => {
                     getRiskByPatientId(patient.id, credentials)
-                )
+                        .then(riskLevel => {
+                            setRisks(previousRisks => ({
+                                ...previousRisks,
+                                [patient.id]: riskLevel
+                            }))
+                        })
+                        .catch(fetchError => {
+                            console.error(fetchError)
 
-                return Promise.all(riskPromises)
-                .then(riskLevels => ({
-                    patientsData,
-                    riskLevels
-                }))
-            })
-            .then(({ patientsData, riskLevels }) => {
-                const riskByPatient = {}
-
-                patientsData.forEach((patient, index) => {
-                    riskByPatient[patient.id] = riskLevels[index]
+                            setRiskErrors(previousErrors => ({
+                                ...previousErrors,
+                                [patient.id]: fetchError.message
+                            }))
+                        })
                 })
-
-                setRisks(riskByPatient)
             })
             .catch(fetchError => {
                 console.error(fetchError)
@@ -93,6 +93,18 @@ function PatientList({ credentials }) {
     }
 
     function handleRiskUpdate(patientId) {
+        setRisks(previousRisks => {
+            const updatedRisks = { ...previousRisks }
+            delete updatedRisks[patientId]
+            return updatedRisks
+        })
+
+        setRiskErrors(previousErrors => {
+            const updatedErrors = { ...previousErrors }
+            delete updatedErrors[patientId]
+            return updatedErrors
+        })
+
         getRiskByPatientId(patientId, credentials)
             .then(riskLevel => {
                 setRisks(previousRisks => ({
@@ -102,7 +114,12 @@ function PatientList({ credentials }) {
             })
             .catch(fetchError => {
                 console.error(fetchError)
-        })
+
+                setRiskErrors(previousErrors => ({
+                    ...previousErrors,
+                    [patientId]: fetchError.message
+                }))
+            })
     }
 
     return (
@@ -138,8 +155,16 @@ function PatientList({ credentials }) {
 
                 <div className="patient-card">
 
-                    <span className={`risk-badge risk-${risks[patient.id]?.toLowerCase()}`}>
-                        {getRiskLabel(risks[patient.id])}
+                    <span
+                        className={`risk-badge ${
+                            riskErrors[patient.id]
+                                ? 'risk-unavailable'
+                                : `risk-${risks[patient.id]?.toLowerCase()}`
+                        }`}
+                    >
+                        {riskErrors[patient.id]
+                            ? 'Évaluation indisponible'
+                            : getRiskLabel(risks[patient.id])}
                     </span>
 
                     <p>
@@ -200,7 +225,7 @@ function PatientList({ credentials }) {
                 </div>
 
                 {patientForNotes?.id === patient.id && (
-                        <NoteListe
+                        <NoteList
                             patient={patientForNotes}
                             credentials={credentials}
                             onRiskUpdate={handleRiskUpdate}

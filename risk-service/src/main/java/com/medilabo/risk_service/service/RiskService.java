@@ -47,7 +47,7 @@ public class RiskService implements IRiskService {
      * patient information and medical notes.
      *
      * @param patientClient client used to retrieve patient information
-     * @param noteClient client used to retrieve patient medical notes
+     * @param noteClient    client used to retrieve patient medical notes
      */
     public RiskService(PatientClient patientClient, NoteClient noteClient) {
         this.patientClient = patientClient;
@@ -77,7 +77,8 @@ public class RiskService implements IRiskService {
                 riskLevel
         );
 
-        return riskLevel;    }
+        return riskLevel;
+    }
 
     private int countTriggers(List<NoteDto> notes) {
         Set<String> foundTriggers = new HashSet<>();
@@ -85,13 +86,13 @@ public class RiskService implements IRiskService {
         for (NoteDto note : notes) {
             String noteText = note.getNote().toLowerCase(Locale.ROOT);
 
-            for(String trigger : TRIGGERS) {
-                if(noteText.contains(trigger)) {
+            for (String trigger : TRIGGERS) {
+                if (noteText.contains(trigger)) {
                     foundTriggers.add(trigger);
                 }
             }
 
-            if(noteText.contains("fumeur") || noteText.contains("fumeuse") || noteText.contains("fumer")) {
+            if (noteText.contains("fumeur") || noteText.contains("fumeuse") || noteText.contains("fumer")) {
                 foundTriggers.add("fumeur");
             }
         }
@@ -105,32 +106,30 @@ public class RiskService implements IRiskService {
     }
 
     private RiskLevel determineRiskLevel(int age, String gender, int triggerCount) {
-        if(age >= 30) {
-            if(triggerCount >= 8) {
+        if (age >= 30) {
+            if (triggerCount >= 8) {
                 return RiskLevel.EARLY_ONSET;
             }
-            if(triggerCount >= 6) {
+            if (triggerCount >= 6) {
                 return RiskLevel.IN_DANGER;
             }
-            if(triggerCount >= 2) {
+            if (triggerCount >= 2) {
                 return RiskLevel.BORDERLINE;
             }
 
             return RiskLevel.NONE;
         }
 
-        if(gender.equals("M")) {
-            if(triggerCount >= 5) {
+        if (gender.equals("M")) {
+            if (triggerCount >= 5) {
                 return RiskLevel.EARLY_ONSET;
             }
-            if(triggerCount >= 3) {
+            if (triggerCount >= 3) {
                 return RiskLevel.IN_DANGER;
             }
 
             return RiskLevel.NONE;
-        }
-
-        else {
+        } else {
             if (triggerCount >= 7) {
                 return RiskLevel.EARLY_ONSET;
             }

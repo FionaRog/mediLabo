@@ -50,6 +50,7 @@ public class NoteClient {
                 .get()
                 .uri("/notes/patient/{patientId}", patientId)
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<NoteDto>>() {});
+                .body(new ParameterizedTypeReference<List<NoteDto>>() {
+                });
     }
 }

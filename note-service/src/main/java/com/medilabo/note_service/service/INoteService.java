@@ -1,6 +1,6 @@
-package com.mediLabo.note_service.service;
+package com.medilabo.note_service.service;
 
-import com.mediLabo.note_service.dto.NoteDto;
+import com.medilabo.note_service.dto.NoteDto;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface INoteService {
      *
      * @param patId the patient identifier
      * @return the list of notes associated with the patient,
-     *         or an empty list if none exist
+     * or an empty list if none exist
      */
     List<NoteDto> getNotesByPatientId(Integer patId);
 

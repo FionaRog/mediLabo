@@ -11,7 +11,7 @@ public class PatientNotFoundException extends RuntimeException {
      *
      * @param id the ID of the patient that could not be found
      */
-    public  PatientNotFoundException(Integer id) {
+    public PatientNotFoundException(Integer id) {
         super("Patient not found with id " + id);
     }
 }

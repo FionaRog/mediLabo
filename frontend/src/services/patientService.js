@@ -1,10 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { API_URL, getAuthorizationHeader, getErrorMessage } from './apiClient.js'
 
-function getAuthorizationHeader(credentials) {
-    return 'Basic ' + btoa(
-        `${credentials.username}:${credentials.password}`
-    )
-}
 
 export function getPatientById(id, credentials) {
     return fetch(`${API_URL}/patients/${id}`, {
@@ -12,11 +7,14 @@ export function getPatientById(id, credentials) {
             Authorization: getAuthorizationHeader(credentials)
         }
     })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                throw new Error(
+                const message = await getErrorMessage(
+                    response,
                     'Erreur lors de la récupération du patient'
                 )
+
+                throw new Error(message)
             }
 
             return response.json()
@@ -29,11 +27,14 @@ export function getAllPatients(credentials) {
             Authorization: getAuthorizationHeader(credentials)
         }
     })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                throw new Error(
+                const message = await getErrorMessage(
+                    response,
                     'Erreur lors de la récupération des patients'
                 )
+
+                throw new Error(message)
             }
 
             return response.json()
@@ -49,15 +50,14 @@ export function addPatient(patient, credentials) {
         },
         body: JSON.stringify(patient)
     })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                return response.json()
-                    .then(errorData => {
-                        const errorMessage =
-                            Object.values(errorData).join(', ')
+                const message = await getErrorMessage(
+                    response,
+                    'Erreur lors de la création du patient'
+                )
 
-                        throw new Error(errorMessage)
-                    })
+                throw new Error(message)
             }
 
             return response.json()
@@ -73,15 +73,14 @@ export function updatePatient(patient, credentials) {
         },
         body: JSON.stringify(patient)
     })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                return response.json()
-                    .then(errorData => {
-                        const errorMessage =
-                            Object.values(errorData).join(', ')
+                const message = await getErrorMessage(
+                    response,
+                    'Erreur lors de la modification du patient'
+                )
 
-                        throw new Error(errorMessage)
-                    })
+                throw new Error(message)
             }
 
             return response.json()

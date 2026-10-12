@@ -1,7 +1,7 @@
-package com.mediLabo.note_service.controller;
+package com.medilabo.note_service.controller;
 
-import com.mediLabo.note_service.dto.NoteDto;
-import com.mediLabo.note_service.service.INoteService;
+import com.medilabo.note_service.dto.NoteDto;
+import com.medilabo.note_service.service.INoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,7 @@ public class NoteController {
      * @return a response containing the patient's notes, or an empty list if none exist
      */
     @GetMapping("/patient/{patId}")
-    public ResponseEntity<List<NoteDto>> getAllNotes(@PathVariable Integer patId){
+    public ResponseEntity<List<NoteDto>> getAllNotes(@PathVariable Integer patId) {
         List<NoteDto> notes = noteService.getNotesByPatientId(patId);
 
         return ResponseEntity.ok(notes);
@@ -42,7 +42,7 @@ public class NoteController {
      * @return a response containing the created note
      */
     @PostMapping
-    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody NoteDto noteDto){
+    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody NoteDto noteDto) {
         NoteDto note = noteService.createNote(noteDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(note);

@@ -1,6 +1,6 @@
-package com.mediLabo.note_service.repository;
+package com.medilabo.note_service.repository;
 
-import com.mediLabo.note_service.model.Note;
+import com.medilabo.note_service.model.Note;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface NoteRepository extends MongoRepository<Note, String> {
      *
      * @param patId the identifier of the patient
      * @return the list of notes associated with the patient,
-     *         or an empty list if no note is found
+     * or an empty list if no note is found
      */
     List<Note> findByPatId(Integer patId);
 }

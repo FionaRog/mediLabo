@@ -1,7 +1,6 @@
 package com.medilabo.patient_service.service;
 
 import com.medilabo.patient_service.dto.PatientDto;
-import com.medilabo.patient_service.model.Patient;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ public interface IPatientService {
     /**
      * Updates an existing patient identified by its ID.
      *
-     * @param id the ID of the patient to update
+     * @param id         the ID of the patient to update
      * @param patientDto the updated patient information
      * @return the updated patient
      */

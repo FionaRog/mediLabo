@@ -1,9 +1,9 @@
-package com.mediLabo.note_service.service;
+package com.medilabo.note_service.service;
 
-import com.mediLabo.note_service.dto.NoteDto;
-import com.mediLabo.note_service.mapper.NoteMapper;
-import com.mediLabo.note_service.model.Note;
-import com.mediLabo.note_service.repository.NoteRepository;
+import com.medilabo.note_service.dto.NoteDto;
+import com.medilabo.note_service.mapper.NoteMapper;
+import com.medilabo.note_service.model.Note;
+import com.medilabo.note_service.repository.NoteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +17,9 @@ import java.util.List;
 @Slf4j
 public class NoteService implements INoteService {
 
-    private NoteRepository noteRepository;
+    private final NoteRepository noteRepository;
 
-    private NoteMapper noteMapper;
+    private final NoteMapper noteMapper;
 
     public NoteService(NoteRepository noteRepository, NoteMapper noteMapper) {
         this.noteRepository = noteRepository;

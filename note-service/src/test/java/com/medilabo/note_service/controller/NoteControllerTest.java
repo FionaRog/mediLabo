@@ -1,8 +1,7 @@
-package com.mediLabo.note_service.controller;
+package com.medilabo.note_service.controller;
 
-import com.mediLabo.note_service.dto.NoteDto;
-import com.mediLabo.note_service.model.Note;
-import com.mediLabo.note_service.service.INoteService;
+import com.medilabo.note_service.dto.NoteDto;
+import com.medilabo.note_service.service.INoteService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

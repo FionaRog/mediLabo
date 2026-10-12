@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react'
 import {getNotesByPatientId } from '../../services/noteService.js'
 import NoteForm from '../noteForm/NoteForm.jsx'
-import './NoteListe.css'
+import './NoteList.css'
 
-function NoteListe({ patient, credentials, onRiskUpdate }) {
+function NoteList({ patient, credentials, onRiskUpdate }) {
     const [notes, setNotes] = useState(null)    
     const [error, setError] = useState(null)
     const [noteForm, setNoteForm] = useState(false)
@@ -100,7 +100,7 @@ function NoteListe({ patient, credentials, onRiskUpdate }) {
 
 }
 
-export default NoteListe
+export default NoteList
 
 
 

@@ -9,6 +9,7 @@ function PatientForm({
     patientToEdit
 }) {
     const [error, setError] = useState(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [firstname, setFirstname] = useState(
         patientToEdit ? patientToEdit.firstname : ''
     )
@@ -36,6 +37,12 @@ function PatientForm({
 
     function handleSubmit(event) {
         event.preventDefault()
+
+        if (isSubmitting) {
+            return
+        }
+
+        setIsSubmitting(true)
 
         const patient = {
             firstname,
@@ -66,6 +73,9 @@ function PatientForm({
             .catch(error => {
                 console.error(error)
                 setError(error.message)
+            })
+            .finally(() => {
+                setIsSubmitting(false)
             })
     }
 
@@ -148,8 +158,10 @@ function PatientForm({
 
                 {error && <p>{error}</p>}
 
-                <button type="submit">
-                    {patientToEdit ? 'Modifier' : 'Ajouter'}
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting
+                        ? 'Enregistrement…'
+                        : patientToEdit ? 'Modifier' : 'Ajouter'}
                 </button>
             </form>
         </div>

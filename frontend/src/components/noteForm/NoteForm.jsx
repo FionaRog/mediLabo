@@ -4,10 +4,17 @@ import './NoteForm.css'
 
 function NoteForm({ patient, credentials, onNoteAdded }) {
     const [error, setError] = useState(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [note, setNote] = useState('')   
 
     function handleSubmit(event) {
         event.preventDefault()
+
+        if (isSubmitting) {
+            return
+        }
+
+        setIsSubmitting(true)
 
         const noteData = {
             patId: patient.id,
@@ -27,7 +34,10 @@ function NoteForm({ patient, credentials, onNoteAdded }) {
             .catch(fetchError => {
                 console.error(fetchError)
                 setError(fetchError.message)
-            })  
+            })
+            .finally(() => {
+                setIsSubmitting(false)
+            })
     }
     
     return (
@@ -45,7 +55,9 @@ function NoteForm({ patient, credentials, onNoteAdded }) {
                     />
                 </div>
                 {error && <p>{error}</p>}
-                <button type="submit">Ajouter</button>
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Enregistrement…' : 'Ajouter'}
+                </button>
             </form>
         </div>
     )

@@ -1,7 +1,7 @@
-package com.mediLabo.note_service.mapper;
+package com.medilabo.note_service.mapper;
 
-import com.mediLabo.note_service.dto.NoteDto;
-import com.mediLabo.note_service.model.Note;
+import com.medilabo.note_service.dto.NoteDto;
+import com.medilabo.note_service.model.Note;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

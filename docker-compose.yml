@@ -5,7 +5,7 @@ services:
   #----------------------------------------------
 
   mongodb:
-    image: mongo:latest
+    image: mongo:8.3.8
     container_name: medilabo-mongodb
 
     volumes:
@@ -24,7 +24,9 @@ services:
 
     environment:
       MYSQL_DATABASE: patient
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Définissez MYSQL_ROOT_PASSWORD dans le fichier .env}
+      MYSQL_USER: ${MYSQL_APP_USERNAME:?Définissez MYSQL_APP_USERNAME dans le fichier .env}
+      MYSQL_PASSWORD: ${MYSQL_APP_PASSWORD:?Définissez MYSQL_APP_PASSWORD dans le fichier .env}
 
     volumes:
       - mysql-data:/var/lib/mysql
@@ -48,8 +50,8 @@ services:
 
     environment:
       DB_URL: jdbc:mysql://mysql:3306/patient
-      DB_USERNAME: ${MYSQL_ROOT_USERNAME}
-      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_USERNAME: ${MYSQL_APP_USERNAME:?Définissez MYSQL_APP_USERNAME dans le fichier .env}
+      DB_PASSWORD: ${MYSQL_APP_PASSWORD:?Définissez MYSQL_APP_PASSWORD dans le fichier .env}
 
     depends_on:
       mysql:
@@ -95,8 +97,8 @@ services:
       PATIENT_SERVICE_URL: http://patient-service:8080
       NOTE_SERVICE_URL: http://note-service:8082
       RISK_SERVICE_URL: http://risk-service:8083
-      APP_USERNAME: ${APP_USERNAME}
-      APP_PASSWORD: ${APP_PASSWORD}
+      APP_USERNAME: ${APP_USERNAME:?Définissez APP_USERNAME dans le fichier .env}
+      APP_PASSWORD: ${APP_PASSWORD:?Définissez APP_PASSWORD dans le fichier .env}
 
     depends_on:
       - patient-service

@@ -62,7 +62,7 @@ public class PatientControllerTest {
 
         mockMvc.perform(get("/patients/{id}",2))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Patient not found with id 2"));
+                .andExpect(jsonPath("$.error").value("Patient not found with id 2"));
 
         verify(patientService).findPatientById(2);
     }

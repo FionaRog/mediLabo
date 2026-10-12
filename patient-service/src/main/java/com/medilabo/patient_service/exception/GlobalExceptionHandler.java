@@ -21,13 +21,15 @@ public class GlobalExceptionHandler {
      * Handles requests for a patient that does not exist.
      *
      * @param e the exception raised when the patient is not found
-     * @return a response containing the error message with HTTP status 404
+     * @return a response with HTTP status 404 and a JSON body containing the error message
      */
     @ExceptionHandler(PatientNotFoundException.class)
-    public ResponseEntity<String> handlePatientNotFoundException(PatientNotFoundException e) {
+    public ResponseEntity<Map<String, String>> handlePatientNotFoundException(
+            PatientNotFoundException e) {
+
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                .body(Map.of("error", e.getMessage()));
     }
 
     /**
@@ -52,17 +54,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles request bodies that cannot be deserialized.
+     * Handles malformed JSON or field formats that prevent request body deserialization.
      *
      * @param e the exception raised when the request body cannot be read
-     * @return a response containing an error message with HTTP status 400
+     * @return a response with HTTP status 400 and a JSON body containing the error message
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleInvalidRequestBodyException(HttpMessageNotReadableException e) {
 
         Map<String, String> error = new HashMap<>();
 
-        error.put("error", "Invalid request body: check birth date and/or gender");
+        error.put("error", "Invalid request body: malformed JSON or invalid field format");
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

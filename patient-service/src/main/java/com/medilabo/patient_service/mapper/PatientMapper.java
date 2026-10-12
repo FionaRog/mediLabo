@@ -40,7 +40,6 @@ public class PatientMapper {
     public Patient toEntity(PatientDto patientDto) {
         Patient patient = new Patient();
 
-        patient.setId(patientDto.getId());
         patient.setFirstname(patientDto.getFirstname());
         patient.setLastname(patientDto.getLastname());
         patient.setDateOfBirth(patientDto.getDateOfBirth());

@@ -23,7 +23,7 @@ public class PatientService implements IPatientService {
 
     private final PatientMapper patientMapper;
 
-    public PatientService(PatientRepository patientRepository,  PatientMapper patientMapper) {
+    public PatientService(PatientRepository patientRepository, PatientMapper patientMapper) {
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
     }
@@ -54,9 +54,9 @@ public class PatientService implements IPatientService {
         log.debug("Searching patient with id: {}", id);
 
         Patient patient = patientRepository.findById(id)
-                        .orElseThrow(() -> {
-                            log.warn("Patient not found with id {}", id);
-                            return new PatientNotFoundException(id);
+                .orElseThrow(() -> {
+                    log.warn("Patient not found with id {}", id);
+                    return new PatientNotFoundException(id);
                 });
 
         return patientMapper.toDto(patient);
@@ -82,7 +82,7 @@ public class PatientService implements IPatientService {
     /**
      * Updates an existing patient identified by its ID.
      *
-     * @param id the ID of the patient to update
+     * @param id         the ID of the patient to update
      * @param patientDto the new patient information
      * @return the updated patient
      * @throws PatientNotFoundException if no patient exists with the given ID

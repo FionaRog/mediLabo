@@ -55,6 +55,11 @@
     text-align: center;
 }
 
+.risk-unavailable {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
 .risk-none {
     background-color: #70e96b;
     color: #122d0f;

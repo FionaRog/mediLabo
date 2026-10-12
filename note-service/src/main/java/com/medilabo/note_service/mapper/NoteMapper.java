@@ -1,7 +1,7 @@
-package com.mediLabo.note_service.mapper;
+package com.medilabo.note_service.mapper;
 
-import com.mediLabo.note_service.dto.NoteDto;
-import com.mediLabo.note_service.model.Note;
+import com.medilabo.note_service.dto.NoteDto;
+import com.medilabo.note_service.model.Note;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,7 +17,7 @@ public class NoteMapper {
      * @param note the note entity to convert
      * @return the corresponding note DTO
      */
-    public NoteDto toDto(Note note){
+    public NoteDto toDto(Note note) {
         NoteDto noteDto = new NoteDto();
         noteDto.setId(note.getId());
         noteDto.setNote(note.getNote());
@@ -33,7 +33,7 @@ public class NoteMapper {
      * @param noteDto the note DTO to convert
      * @return the corresponding note entity
      */
-    public Note toEntity(NoteDto noteDto){
+    public Note toEntity(NoteDto noteDto) {
         Note note = new Note();
         note.setNote(noteDto.getNote());
         note.setPatient(noteDto.getPatient());

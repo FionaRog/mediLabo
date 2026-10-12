@@ -1,10 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL, getAuthorizationHeader, getErrorMessage } from './apiClient.js'
 
-function getAuthorizationHeader(credentials) {
-    return 'Basic ' + btoa(
-        `${credentials.username}:${credentials.password}`
-    )
-}
 
 export function getRiskByPatientId(patientId, credentials) {
     return fetch(`${API_URL}/risk/${patientId}`, {
@@ -12,10 +7,16 @@ export function getRiskByPatientId(patientId, credentials) {
             'Authorization': getAuthorizationHeader(credentials)
         }
     })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                throw new Error("Erreur lors de la récupération du risque")
+                const message = await getErrorMessage(
+                    response,
+                    'Erreur lors de la récupération du risque'
+                )
+
+                throw new Error(message)
             }
+
             return response.json()
         })
 }        

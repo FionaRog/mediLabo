@@ -1,7 +1,6 @@
 package com.medilabo.patient_service.controller;
 
 import com.medilabo.patient_service.dto.PatientDto;
-import com.medilabo.patient_service.model.Patient;
 import com.medilabo.patient_service.service.IPatientService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,7 @@ public class PatientController {
      * @return a response containing the list of all patients
      */
     @GetMapping
-    public ResponseEntity<List<PatientDto>> getAllPatients(){
+    public ResponseEntity<List<PatientDto>> getAllPatients() {
         return ResponseEntity.ok(patientService.findAllPatients());
     }
 
@@ -41,10 +40,10 @@ public class PatientController {
      * @return a response containing the requested patient
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PatientDto> getPatientById(@PathVariable Integer id){
-       PatientDto patientDto = patientService.findPatientById(id);
+    public ResponseEntity<PatientDto> getPatientById(@PathVariable Integer id) {
+        PatientDto patientDto = patientService.findPatientById(id);
 
-       return ResponseEntity.ok(patientDto);
+        return ResponseEntity.ok(patientDto);
     }
 
     /**
@@ -54,7 +53,7 @@ public class PatientController {
      * @return a response containing the created patient with HTTP status 201
      */
     @PostMapping
-    public ResponseEntity<PatientDto> createPatient(@Valid @RequestBody PatientDto patientDto){
+    public ResponseEntity<PatientDto> createPatient(@Valid @RequestBody PatientDto patientDto) {
         PatientDto newPatient = patientService.addNewPatient(patientDto);
 
         return ResponseEntity
@@ -65,12 +64,12 @@ public class PatientController {
     /**
      * Updates an existing patient.
      *
-     * @param id the ID of the patient to update
+     * @param id         the ID of the patient to update
      * @param patientDto the new patient information
      * @return a response containing the updated patient
      */
     @PutMapping("/{id}")
-    public ResponseEntity<PatientDto> updatePatient(@PathVariable Integer id, @Valid @RequestBody PatientDto patientDto){
+    public ResponseEntity<PatientDto> updatePatient(@PathVariable Integer id, @Valid @RequestBody PatientDto patientDto) {
         PatientDto updatedPatient = patientService.updatePatient(id, patientDto);
 
         return ResponseEntity.ok(updatedPatient);

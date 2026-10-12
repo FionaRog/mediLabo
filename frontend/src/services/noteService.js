@@ -1,10 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL
-
-function getAuthorizationHeader(credentials) {
-    return 'Basic ' + btoa(
-        `${credentials.username}:${credentials.password}`
-    )
-}
+import { API_URL, getAuthorizationHeader, getErrorMessage } from './apiClient.js'
 
 export function getNotesByPatientId(patId, credentials) {
     return fetch(`${API_URL}/notes/patient/${patId}`, {
@@ -12,12 +6,16 @@ export function getNotesByPatientId(patId, credentials) {
             Authorization: getAuthorizationHeader(credentials)
         }
     })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                throw new Error(
+                const message = await getErrorMessage(
+                    response,
                     'Erreur lors de la récupération des notes'
                 )
+
+                throw new Error(message)
             }
+
             return response.json()
         })
 }
@@ -31,15 +29,16 @@ export function createNote(noteData, credentials) {
         },
         body: JSON.stringify(noteData)
     })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                return response.json()
-                    .then(errorData => {
-                        const errorMessage =
-                            Object.values(errorData).join(', ')
-                        throw new Error(errorMessage)
-                    })
+                const message = await getErrorMessage(
+                    response,
+                    'Erreur lors de la création de la note'
+                )
+
+                throw new Error(message)
             }
+
             return response.json()
         })
 }
