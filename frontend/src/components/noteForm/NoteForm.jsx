@@ -18,7 +18,6 @@ function NoteForm({ patient, credentials, onNoteAdded }) {
 
         const noteData = {
             patId: patient.id,
-            patient: `${patient.firstname} ${patient.lastname}`,
             note,
         }
 

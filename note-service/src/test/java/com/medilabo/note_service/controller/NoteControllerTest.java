@@ -35,13 +35,11 @@ public class NoteControllerTest {
     @DisplayName("Should display notes when patient's ID is given")
     public void getNoteById() throws Exception {
         NoteDto noteDto = new NoteDto();
-        noteDto.setPatient("Test");
         noteDto.setPatId(1);
         noteDto.setNote("A first note");
         noteDto.setId("abc");
 
         NoteDto noteDto2 = new NoteDto();
-        noteDto2.setPatient("Test");
         noteDto2.setPatId(1);
         noteDto2.setNote("A second note");
         noteDto2.setId("abcd");
@@ -53,7 +51,6 @@ public class NoteControllerTest {
                 .andExpect(jsonPath("$[0].patId").value(1))
                 .andExpect(jsonPath("$[0].note").value("A first note"))
                 .andExpect(jsonPath("$[1].note").value("A second note"))
-                .andExpect(jsonPath("$[0].patient").value("Test"))
                 .andExpect(jsonPath("$.length()").value(2));
 
         verify(noteService).getNotesByPatientId(1);
@@ -63,7 +60,6 @@ public class NoteControllerTest {
     @DisplayName("Should return note when a note is created")
     public void createNoteTest () throws Exception {
         NoteDto noteDto = new NoteDto();
-        noteDto.setPatient("Test");
         noteDto.setPatId(1);
         noteDto.setNote("A first note");
 
@@ -73,7 +69,6 @@ public class NoteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(noteDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.patient").value("Test"))
                 .andExpect(jsonPath("$.note").value("A first note"))
                 .andExpect(jsonPath("$.patId").value(1));
 
@@ -91,7 +86,6 @@ public class NoteControllerTest {
                         .content(objectMapper.writeValueAsString(noteDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.patId").value("Patient id is required"))
-                .andExpect(jsonPath("$.patient").value("Patient name is required"))
                 .andExpect(jsonPath("$.note").value("Note is required"));
 
         verifyNoInteractions(noteService);

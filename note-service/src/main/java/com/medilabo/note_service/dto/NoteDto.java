@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
  * Data Transfer Object used to transfer medical note data between
  * the API layer and the service layer.
  * <p>
- * Validation constraints ensure that a note is associated with a patient
- * and contains the required information.
+ * Validation constraints require a patient identifier and non-blank note text.
  * </p>
  */
 @Getter
@@ -26,9 +25,6 @@ public class NoteDto {
 
     @NotNull(message = "Patient id is required")
     private Integer patId;
-
-    @NotBlank(message = "Patient name is required")
-    private String patient;
 
     private LocalDateTime createdAt;
 

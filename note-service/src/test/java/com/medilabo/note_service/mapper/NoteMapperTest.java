@@ -18,7 +18,6 @@ public class NoteMapperTest {
     @DisplayName("Should map NoteDto into Note")
     void noteDtoToNoteTest() {
         NoteDto noteDto = new NoteDto();
-        noteDto.setPatient("Test");
         noteDto.setNote("This is a test");
         noteDto.setPatId(1);
         noteDto.setId("abc");
@@ -26,7 +25,6 @@ public class NoteMapperTest {
 
         Note toNote = noteMapper.toEntity(noteDto);
 
-        assertEquals(noteDto.getPatient(), toNote.getPatient());
         assertEquals(noteDto.getNote(), toNote.getNote());
         assertEquals(noteDto.getPatId(), toNote.getPatId());
 
@@ -38,7 +36,6 @@ public class NoteMapperTest {
     @DisplayName("Should map Note into NoteDto")
     void noteToNoteDtoTest() {
         Note note = new Note();
-        note.setPatient("Test");
         note.setNote("This is a test");
         note.setPatId(1);
         note.setId("abc");
@@ -46,7 +43,6 @@ public class NoteMapperTest {
 
         NoteDto toNoteDto = noteMapper.toDto(note);
 
-        assertEquals(note.getPatient(), toNoteDto.getPatient());
         assertEquals(note.getNote(), toNoteDto.getNote());
         assertEquals(note.getPatId(), toNoteDto.getPatId());
         assertEquals(note.getId(), toNoteDto.getId());

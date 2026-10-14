@@ -38,7 +38,6 @@ public class NoteServiceTest {
     @DisplayName("Should return Notes by Patient's ID")
     void getNotesByPatientId(){
         Note note = new Note();
-        note.setPatient("Test1");
         note.setNote("This is a test");
         note.setPatId(1);
         note.setId("abc");
@@ -46,7 +45,6 @@ public class NoteServiceTest {
         NoteDto noteDto = new NoteDto();
         noteDto.setNote("This is a test");
         noteDto.setPatId(1);
-        noteDto.setPatient("Test1");
         noteDto.setId("abc");
 
         when(noteRepository.findByPatId(1)).thenReturn(List.of(note));
@@ -67,14 +65,12 @@ public class NoteServiceTest {
         NoteDto noteDto = new NoteDto();
         noteDto.setNote("This is a test");
         noteDto.setPatId(1);
-        noteDto.setPatient("Test");
         noteDto.setId("abc");
 
         Note note = new Note();
         note.setNote("This is a test");
         note.setPatId(1);
         note.setId("abc");
-        note.setPatient("Test");
 
         when(noteMapper.toEntity(noteDto)).thenReturn(note);
         when(noteMapper.toDto(note)).thenReturn(noteDto);
@@ -82,7 +78,6 @@ public class NoteServiceTest {
 
         NoteDto createdNote = noteService.createNote(noteDto);
 
-        assertEquals(noteDto.getPatient(), createdNote.getPatient());
         verify(noteRepository).insert(note);
         verify(noteMapper).toDto(note);
         verify(noteMapper).toEntity(noteDto);

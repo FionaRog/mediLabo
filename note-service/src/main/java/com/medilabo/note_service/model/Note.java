@@ -26,8 +26,6 @@ public class Note {
 
     private Integer patId;
 
-    private String patient;
-
     private LocalDateTime createdAt;
 
 }

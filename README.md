@@ -107,7 +107,6 @@ Un fichier `.env.example` est fourni à la racine du projet.
 Créez un fichier `.env` à partir de ce modèle :
 
 ```env
-MYSQL_ROOT_USERNAME=root
 MYSQL_ROOT_PASSWORD=your_mysql_password
 
 MYSQL_APP_USERNAME=medilabo_app
@@ -181,12 +180,15 @@ Installez les dépendances :
 npm install
 ```
 
-Le frontend est configuré pour communiquer avec la Gateway grâce à la variable
-d'environnement suivante :
+Dans le dossier frontend, créez un fichier .env contenant :
 
 ```env
 VITE_API_URL=http://localhost:8081
 ```
+
+Le frontend est configuré pour communiquer avec la Gateway grâce à cette variable
+d'environnement.
+
 
 Démarrez ensuite le serveur de développement :
 
@@ -239,7 +241,7 @@ mvn test
 Ils peuvent également être exécutés avec le Maven Wrapper :
 
 ```bash
-./mvnw test
+sh mvnw test
 ```
 
 Sous Windows :
@@ -252,6 +254,20 @@ Lors de la construction des images Docker, les tests ne sont pas exécutés,
 afin d'éviter de les relancer à chaque construction de l'image. Ils doivent
 donc être exécutés séparément avant la construction ou le déploiement de
 l'application.
+
+### Configuration des tests de note-service
+
+Le fichier `note-service/src/test/resources/application.properties`
+définit une URI MongoDB locale dédiée aux tests, sans identifiants.
+Cette configuration permet de lancer les tests sans définir la variable
+d'environnement `MONGODB_URI`.
+
+Les tests du service utilisent un repository simulé. Le test
+`contextLoads` vérifie le chargement du contexte Spring, mais ne garantit
+pas la disponibilité de MongoDB ni le fonctionnement des opérations en base.
+
+Cette configuration de test ne modifie pas celle de l'application
+exécutée avec Docker Compose.cd 
 
 ## Green Code et pistes d'amélioration
 
