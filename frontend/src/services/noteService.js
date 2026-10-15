@@ -2,8 +2,8 @@ import { API_URL, getAuthorizationHeader, getCsrfHeader, getErrorMessage } from 
 
 export function getNotesByPatientId(patId, credentials) {
     return fetch(`${API_URL}/notes/patient/${patId}`, {
-        headers: {
         credentials: 'include',
+        headers: {
             Authorization: getAuthorizationHeader(credentials)
         }
     })

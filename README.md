@@ -11,9 +11,12 @@ L'application repose sur une architecture en microservices composée de :
 - `note-service` : gestion des notes médicales, stockées dans MongoDB ;
 - `risk-service` : calcul du niveau de risque de diabète à partir des données
   fournies par patient-service et note-service.
+- `frontend` : interface React, construite avec Vite et servie par Nginx ;
 
-Les microservices et les bases de données sont orchestrés avec Docker Compose.
-Le frontend React est lancé séparément.
+Le frontend React, les microservices backend et les bases de données sont
+orchestrés avec Docker Compose.
+
+Le frontend est construit avec Vite, puis ses fichiers sont servis par Nginx.
 
 ## Technologies
 
@@ -54,6 +57,7 @@ L'application est composée de plusieurs services indépendants communiquant ent
 | Risk Service | 8083 | Réseau Docker uniquement |
 | MySQL | 3306 | Réseau Docker uniquement |
 | MongoDB | 27017 | Réseau Docker uniquement |
+| Frontend | 5173 → 80 | Interface accessible sur l'hôte |
 
 ### Communication entre les services
 
@@ -88,11 +92,14 @@ Pour lancer l'application, les outils suivants sont nécessaires :
 
 - Docker
 - Docker Compose
-- Node.js et npm pour le frontend
 
-Java, Maven, MySQL et MongoDB n'ont pas besoin d'être installés localement pour
-lancer le backend avec Docker : ils sont fournis par les images et conteneurs
-définis dans le projet.
+Docker et Docker Compose suffisent pour lancer l'application complète.
+
+Java, Maven, Node.js, npm, MySQL et MongoDB sont fournis par les images
+utilisées pour construire ou exécuter les différents composants.
+
+Java 21 reste nécessaire pour exécuter les tests backend localement.
+Node.js et npm sont nécessaires pour développer le frontend hors Docker.
 
 ## Installation et lancement
 
@@ -121,7 +128,7 @@ Remplacez les valeurs d'exemple par les valeurs souhaitées.
 Le fichier `.env` contient des informations sensibles et n'est pas versionné
 dans le dépôt Git.
 
-### 3. Lancer le backend
+### 3. Lancer l'application
 
 Depuis la racine du projet, exécutez :
 
@@ -132,9 +139,11 @@ docker compose up -d --build
 Cette commande construit les images Docker des microservices puis démarre
 l'ensemble des services nécessaires à l'application.
 
-La Gateway est ensuite accessible à l'adresse :
+Une fois les services démarrés, ouvrez l'application à l'adresse :
 
-`http://localhost:8081`
+http://localhost:5173
+
+La Gateway reste accessible sur http://localhost:8081.
 
 Les requêtes adressées aux API doivent passer par la Gateway et nécessitent
 l'authentification configurée avec les variables `APP_USERNAME` et
@@ -153,7 +162,7 @@ Les bases de données doivent notamment apparaître comme `healthy` avant que
 les microservices qui en dépendent puissent démarrer.
 
 
-### 5. Arrêter le backend
+### 5. Arrêter l'application
 
 Pour arrêter et supprimer les conteneurs :
 
@@ -164,43 +173,51 @@ docker compose down
 Les volumes Docker ne sont pas supprimés par cette commande. Les données
 MySQL et MongoDB sont donc conservées pour le prochain démarrage.
 
-## Lancement du frontend
+## Développement du frontend hors Docker — optionnel
 
-Le frontend React est lancé séparément des services Docker.
+Pour bénéficier du rechargement automatique pendant le développement,
+le frontend peut être lancé avec Vite.
 
-Depuis un terminal, placez-vous dans le dossier du frontend :
-
-```bash
-cd frontend
-```
-
-Installez les dépendances :
+Arrêtez d'abord le conteneur frontend pour libérer le port 5173 :
 
 ```bash
-npm install
+docker compose stop frontend
 ```
 
-Dans le dossier frontend, créez un fichier .env contenant :
+Depuis le dossier frontend, installez les dépendances :
+
+```bash
+npm ci
+```
+
+Créez un fichier `.env` dans ce dossier contenant :
 
 ```env
 VITE_API_URL=http://localhost:8081
 ```
 
-Le frontend est configuré pour communiquer avec la Gateway grâce à cette variable
-d'environnement.
-
-
-Démarrez ensuite le serveur de développement :
+Puis démarrez Vite :
 
 ```bash
 npm run dev
 ```
 
-Vite affiche alors dans le terminal l'adresse permettant d'accéder à
-l'interface de l'application.
+Les services backend doivent rester démarrés.
 
-Pour utiliser l'application complète, les conteneurs Docker du backend doivent
-donc être démarrés en parallèle.
+Pour revenir au frontend Docker, arrêtez Vite avec Ctrl + C, puis exécutez
+depuis la racine du projet :
+
+```bash
+docker compose up -d --build frontend
+```
+
+Dans l'image Docker, l'URL de l'API est fournie à Vite pendant la construction
+par l'argument `VITE_API_URL`, dont la valeur par défaut est
+`http://localhost:8081`. Le fichier `.env` local du frontend est exclu
+du contexte de construction.
+
+Après une modification du code frontend ou de cette URL, reconstruisez
+l'image avec la commande ci-dessus.
 
 ## Authentification et accès aux API
 
@@ -214,6 +231,20 @@ APP_USERNAME=your_app_username
 APP_PASSWORD=your_app_password
 ```
 
+L'authentification utilise HTTP Basic.
+
+Après authentification, le frontend récupère un jeton CSRF avec
+GET /auth/csrf et conserve le cookie de session associé.
+
+Les requêtes POST et PUT doivent transmettre ce cookie ainsi que le jeton
+dans l'en-tête indiqué par la réponse de /auth/csrf.
+
+La déconnexion utilise POST /auth/logout, également protégé par CSRF.
+Elle invalide la session côté serveur. Après succès, le frontend efface
+les identifiants et le jeton conservés en mémoire.
+
+L'environnement local utilise HTTP.
+
 Les requêtes vers les différents microservices doivent passer par la Gateway,
 accessible sur le port `8081`.
 
@@ -223,9 +254,12 @@ Les principales routes sont :
 - `http://localhost:8081/notes/**` pour la gestion des notes médicales ;
 - `http://localhost:8081/risk/**` pour l'évaluation du niveau de risque.
 
-Les microservices ne sont pas directement exposés sur l'hôte. Les échanges
-entre la Gateway, les microservices et les bases de données sont réalisés
-sur le réseau Docker interne.
+Les services patient-service, note-service et risk-service ainsi que les bases
+de données ne publient aucun port sur l'hôte. Ils communiquent sur le réseau
+Docker interne.
+
+Le navigateur accède au frontend sur le port 5173 et appelle les API
+via la Gateway sur le port 8081.
 
 ## Tests
 
