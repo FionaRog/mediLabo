@@ -1,8 +1,9 @@
-import { API_URL, getAuthorizationHeader, getErrorMessage } from './apiClient.js'
+import { API_URL, getAuthorizationHeader, getCsrfHeader, getErrorMessage } from './apiClient.js'
 
 export function getNotesByPatientId(patId, credentials) {
     return fetch(`${API_URL}/notes/patient/${patId}`, {
         headers: {
+        credentials: 'include',
             Authorization: getAuthorizationHeader(credentials)
         }
     })
@@ -23,9 +24,11 @@ export function getNotesByPatientId(patId, credentials) {
 export function createNote(noteData, credentials) {
     return fetch(`${API_URL}/notes`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: getAuthorizationHeader(credentials)
+            Authorization: getAuthorizationHeader(credentials),
+            ...getCsrfHeader(credentials)
         },
         body: JSON.stringify(noteData)
     })

@@ -1,8 +1,9 @@
-import { API_URL, getAuthorizationHeader, getErrorMessage } from './apiClient.js'
+import { API_URL, getAuthorizationHeader, getCsrfHeader, getErrorMessage } from './apiClient.js'
 
 
 export function getPatientById(id, credentials) {
     return fetch(`${API_URL}/patients/${id}`, {
+        credentials: 'include',
         headers: {
             Authorization: getAuthorizationHeader(credentials)
         }
@@ -23,6 +24,7 @@ export function getPatientById(id, credentials) {
 
 export function getAllPatients(credentials) {
     return fetch(`${API_URL}/patients`, {
+        credentials: 'include',
         headers: {
             Authorization: getAuthorizationHeader(credentials)
         }
@@ -44,9 +46,11 @@ export function getAllPatients(credentials) {
 export function addPatient(patient, credentials) {
     return fetch(`${API_URL}/patients`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: getAuthorizationHeader(credentials)
+            Authorization: getAuthorizationHeader(credentials),
+            ...getCsrfHeader(credentials)
         },
         body: JSON.stringify(patient)
     })
@@ -67,9 +71,11 @@ export function addPatient(patient, credentials) {
 export function updatePatient(patient, credentials) {
     return fetch(`${API_URL}/patients/${patient.id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: getAuthorizationHeader(credentials)
+            Authorization: getAuthorizationHeader(credentials),
+            ...getCsrfHeader(credentials)
         },
         body: JSON.stringify(patient)
     })

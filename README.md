@@ -255,19 +255,57 @@ afin d'éviter de les relancer à chaque construction de l'image. Ils doivent
 donc être exécutés séparément avant la construction ou le déploiement de
 l'application.
 
-### Configuration des tests de note-service
+### Configuration des tests
+
+L'exécution des tests depuis un terminal nécessite Java 21.
+Le Maven Wrapper permet de les lancer sans installer Maven séparément.
+
+Les configurations placées dans `src/test/resources/application.properties`
+sont réservées aux tests et ne sont pas intégrées au JAR applicatif.
+Elles ne modifient pas la configuration utilisée par Docker Compose.
+
+#### patient-service
+
+Les tests utilisent une base H2 en mémoire, configurée dans
+`patient-service/src/test/resources/application.properties`.
+
+Cette base est distincte de MySQL. Son schéma est créé puis supprimé
+lors de la fermeture du contexte de test. Le chargement de `data.sql`
+est désactivé pour ces tests.
+
+#### note-service
 
 Le fichier `note-service/src/test/resources/application.properties`
 définit une URI MongoDB locale dédiée aux tests, sans identifiants.
-Cette configuration permet de lancer les tests sans définir la variable
-d'environnement `MONGODB_URI`.
 
-Les tests du service utilisent un repository simulé. Le test
-`contextLoads` vérifie le chargement du contexte Spring, mais ne garantit
+Cette configuration permet de charger le contexte Spring sans définir
+la variable d'environnement `MONGODB_URI`. Elle ne démarre pas MongoDB.
+
+Les tests unitaires du service utilisent un repository simulé.
+Le test `contextLoads` vérifie le chargement du contexte, mais ne garantit
 pas la disponibilité de MongoDB ni le fonctionnement des opérations en base.
 
-Cette configuration de test ne modifie pas celle de l'application
-exécutée avec Docker Compose.cd 
+#### gateway
+
+Le fichier `gateway/src/test/resources/application.properties`
+définit des identifiants fictifs :
+
+- `app.security.username=testuser`
+- `app.security.password=testpassword`
+
+Les tests peuvent ainsi démarrer sans les variables d'environnement
+`APP_USERNAME` et `APP_PASSWORD` utilisées par l'application.
+
+Ces valeurs sont uniquement destinées aux tests et peuvent être versionnées.
+
+#### risk-service
+
+Aucun fichier de configuration supplémentaire n'est nécessaire actuellement.
+Les URL des services possèdent des valeurs locales par défaut.
+
+Les tests unitaires du calcul du risque utilisent des clients HTTP simulés :
+ils n'appellent pas patient-service ou note-service.
+Le chargement du contexte seul ne vérifie pas la disponibilité de ces services.
 
 ## Green Code et pistes d'amélioration
 

@@ -3,6 +3,7 @@ import { API_URL, getAuthorizationHeader, getErrorMessage } from './apiClient.js
 
 export function getRiskByPatientId(patientId, credentials) {
     return fetch(`${API_URL}/risk/${patientId}`, {
+        credentials: 'include',
         headers: {
             'Authorization': getAuthorizationHeader(credentials)
         }

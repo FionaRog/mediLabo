@@ -14,4 +14,10 @@ export async function getErrorMessage(response, fallbackMessage) {
     }
 }
 
+export function getCsrfHeader(credentials) {
+    return {
+        [credentials.csrfToken.headerName]: credentials.csrfToken.token
+    }
+}
+
 export const API_URL = import.meta.env.VITE_API_URL

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { login } from '../../services/authService.js'
+import { login, getCsrfToken } from '../../services/authService.js'
 import './Login.css'
 
 function Login({ onLoginSuccess }) {
@@ -7,21 +7,29 @@ function Login({ onLoginSuccess }) {
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault()
+        setError(null)
 
-        login(username, password)
-            .then(response => {
-                if (response.ok) {
-                    setError(null)
-                    onLoginSuccess(username, password)
-                } else {
+            try {
+                const response = await login(username, password)
+
+                if (!response.ok) {
                     setError('Identifiants incorrects')
+                    return
                 }
-            })
-            .catch(() => {
-                setError('Impossible de contacter le serveur')
-            })
+
+                const csrfToken = await getCsrfToken({
+                    username,
+                    password
+                })
+
+                onLoginSuccess(username, password, csrfToken)
+            } catch (error) {
+                setError(
+                    error.message || 'Impossible de contacter le serveur'
+                )
+            }
     }
 
     return (

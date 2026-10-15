@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { logout } from './services/authService.js'
 import './App.css'
 import Header from './components/header/Header.jsx'
 import PatientList from './components/patientList/PatientList.jsx'
@@ -7,15 +8,26 @@ import Grainient from './components/background/Grainient.jsx'
 
 function App() {
     const [credentials, setCredentials] = useState(null)
+    const [logoutError, setLogoutError] = useState(null)
 
-    function handleLogout() {
-        setCredentials(null)
+    async function handleLogout() {
+        setLogoutError(null)
+
+        try {
+            await logout(credentials)
+            setCredentials(null)
+        } catch (error) {
+            setLogoutError(error.message)
+        }
     }
 
-    function handleLoginSuccess(username, password) {
+    function handleLoginSuccess(username, password, csrfToken) {
+        setLogoutError(null)
+
         setCredentials({
             username,
-            password
+            password,
+            csrfToken
         })
     }
 
@@ -45,6 +57,7 @@ function App() {
             />
 
             <div className="app-content">
+                {logoutError && <p role="alert">{logoutError}</p>}
                 {credentials
                     ? <PatientList credentials={credentials} />
                     : <Login onLoginSuccess={handleLoginSuccess} />

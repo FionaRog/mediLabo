@@ -15,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 import java.util.List;
 
@@ -35,8 +37,8 @@ public class SecurityConfig {
 
     /**
      * Configures the security filter chain for incoming HTTP requests.
-     * All requests require HTTP Basic authentication and CSRF protection
-     * is disabled.
+     * All requests require authentication. HTTP Basic authentication
+     * and session-based CSRF protection are enabled.
      *
      * @param http the HTTP security configuration
      * @return the configured security filter chain
@@ -50,7 +52,17 @@ public class SecurityConfig {
                         auth.anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable());
+                .csrf(Customizer.withDefaults())
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(
+                                new HttpStatusReturningLogoutSuccessHandler(
+                                        HttpStatus.NO_CONTENT)
+                        )
+                );
+
 
         return http.build();
     }
