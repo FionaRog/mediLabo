@@ -34,6 +34,7 @@ Le frontend est construit avec Vite, puis ses fichiers sont servis par Nginx.
 
 - React
 - Vite
+- Nginx
 
 ### Bases de données
 
@@ -61,7 +62,12 @@ L'application est composée de plusieurs services indépendants communiquant ent
 
 ### Communication entre les services
 
-Le client accède aux API par l'intermédiaire de la Gateway sur le port `8081`.
+Le navigateur charge l'interface servie par Nginx à l'adresse
+http://localhost:5173.
+
+Le code React exécuté dans le navigateur appelle ensuite directement
+la Gateway à l'adresse http://localhost:8081 pour accéder aux API.
+Nginx sert les fichiers du frontend ; il ne relaie pas les appels aux API.
 
 La Gateway redirige ensuite les requêtes vers le microservice concerné :
 
@@ -105,7 +111,8 @@ Node.js et npm sont nécessaires pour développer le frontend hors Docker.
 
 ### 1. Cloner le projet
 
-Clonez le dépôt puis placez-vous à la racine du projet.
+git clone https://github.com/FionaRog/mediLabo.git
+cd mediLabo
 
 ### 2. Configurer les variables d'environnement
 
@@ -136,8 +143,14 @@ Depuis la racine du projet, exécutez :
 docker compose up -d --build
 ```
 
-Cette commande construit les images Docker des microservices puis démarre
-l'ensemble des services nécessaires à l'application.
+Cette commande construit les images Docker du frontend et des microservices,
+puis démarre l'ensemble de l'application, y compris MySQL et MongoDB.
+
+Le frontend est compilé avec Vite pendant la construction de son image.
+Les fichiers générés sont ensuite servis par Nginx dans le conteneur,
+sans utiliser le serveur de développement Vite.
+
+Aucune commande npm n'est nécessaire pour ce lancement avec Docker.
 
 Une fois les services démarrés, ouvrez l'application à l'adresse :
 
@@ -177,6 +190,7 @@ MySQL et MongoDB sont donc conservées pour le prochain démarrage.
 
 Pour bénéficier du rechargement automatique pendant le développement,
 le frontend peut être lancé avec Vite.
+Cette option nécessite Node.js et npm installés sur votre machine.
 
 Arrêtez d'abord le conteneur frontend pour libérer le port 5173 :
 
@@ -234,10 +248,12 @@ APP_PASSWORD=your_app_password
 L'authentification utilise HTTP Basic.
 
 Après authentification, le frontend récupère un jeton CSRF avec
-GET /auth/csrf et conserve le cookie de session associé.
+`GET /auth/csrf`. Le navigateur conserve le cookie de session associé
+et le transmet avec les requêtes configurées avec `credentials: 'include'`.
 
-Les requêtes POST et PUT doivent transmettre ce cookie ainsi que le jeton
-dans l'en-tête indiqué par la réponse de /auth/csrf.
+Les appels aux API continuent d'utiliser l'authentification HTTP Basic.
+Pour les requêtes POST et PUT, le frontend transmet également le jeton
+CSRF dans l'en-tête indiqué par la réponse de `/auth/csrf`.
 
 La déconnexion utilise POST /auth/logout, également protégé par CSRF.
 Elle invalide la session côté serveur. Après succès, le frontend efface
@@ -343,48 +359,81 @@ Le chargement du contexte seul ne vérifie pas la disponibilité de ces services
 
 ## Green Code et pistes d'amélioration
 
-Dans le cadre de la politique environnementale du projet, plusieurs pratiques
-ont déjà été intégrées à MédiLabo et différentes pistes d'amélioration peuvent
-être envisagées afin de limiter les ressources nécessaires à son fonctionnement.
+Le Green Code consiste à limiter les ressources nécessaires au fonctionnement
+d’un logiciel : calculs, mémoire, stockage et échanges réseau, tout en
+répondant aux besoins des utilisateurs.
 
 ### Mesures déjà mises en œuvre
 
-- Utilisation de Dockerfiles multi-stage afin de ne conserver dans les images
-  finales que les éléments nécessaires à l'exécution des microservices.
-- Utilisation d'images contenant un JRE pour l'exécution, plutôt qu'un JDK
-  complet.
-- Optimisation du cache Docker en séparant le téléchargement des dépendances
-  Maven de la copie du code source.
-- Utilisation de fichiers `.dockerignore` afin de limiter les fichiers envoyés
-  au moteur Docker lors de la construction des images.
+- **Construction Docker en plusieurs étapes** : utilisation de Dockerfiles multi-stage 
+  afin de ne conserver dans les images finales que les éléments nécessaires 
+  à l'exécution des microservices.
+- **Utilisation d’un JRE pour les services Java** : les images d’exécution
+  n’embarquent pas le JDK complet.
+- **Réutilisation des couches Docker** : lorsque les dépendances ne changent
+  pas, les couches correspondantes peuvent être réutilisées lors des builds.
+- **Utilisation de fichiers `.dockerignore`** : les fichiers envoyés
+  au moteur Docker sont limités lors de la construction des images.
 
-### Suggestions d'actions
+### Pistes d'amélioration
 
 Afin de poursuivre la démarche Green Code, plusieurs actions pourraient être
 étudiées :
 
-- **Mesurer avant d'optimiser** : suivre la consommation CPU, mémoire et les
-  temps d'exécution des différents microservices afin d'identifier les
-  composants les plus consommateurs de ressources.
+**Mesurer les performances**
 
-- **Adapter les ressources des conteneurs** : dimensionner les ressources CPU
-  et mémoire en fonction des besoins réels de chaque microservice afin d'éviter
-  le surdimensionnement.
+Lighthouse, accessible depuis les outils de développement de Chrome,
+permettrait d’analyser les performances de l’interface et d’identifier
+des optimisations de chargement.
 
-- **Optimiser les échanges entre microservices** : limiter les appels réseau
-  inutiles et la quantité de données transférées entre les services.
+Les mesures seraient comparées avant et après modification, dans des
+conditions similaires. Lighthouse ne mesure toutefois pas directement
+la consommation énergétique : une amélioration de performance ne suffit
+pas à quantifier un gain environnemental.
 
-- **Optimiser les accès aux bases de données** : analyser les requêtes et
-  utiliser des index adaptés afin de limiter les traitements et lectures
-  inutiles.
+**Réduire la taille des images Docker**
 
-- **Limiter les données retournées par les API** : utiliser des DTO adaptés et,
-  lorsque cela devient nécessaire, de la pagination afin de ne transférer que
-  les informations utiles au client.
+Des variantes plus légères des images Java, comme celles d’Eclipse Temurin
+basées sur Alpine, pourraient être étudiées après vérification de leur
+compatibilité avec l’application.
 
-- **Optimiser le frontend** : limiter les dépendances inutiles et la taille des
-  ressources JavaScript, CSS et graphiques téléchargées par le navigateur.
+L’objectif serait de réduire le stockage et les volumes téléchargés lors
+des déploiements. 
 
-- **Suivre l'évolution de l'application** : mesurer les effets des
-  optimisations mises en place afin de vérifier qu'elles apportent réellement
-  une réduction des ressources utilisées.
+**Mettre en place un cache dans les services**
+
+Un cache pourrait éviter des requêtes répétées en base pour des données
+fréquemment consultées, comme les informations d’un patient ou ses notes.
+
+Sa taille et sa durée de conservation devraient être limitées. Les entrées
+concernées devraient être actualisées ou invalidées après une modification
+de patient ou l’ajout d’une note, afin de préserver la fraîcheur des données
+affichées et utilisées pour le calcul du risque.
+
+**Réduire les appels réseau redondants**
+
+Actuellement, `risk-service` appelle `patient-service` et `note-service`
+pour obtenir les données nécessaires à l’évaluation du risque.
+
+Une évolution serait de séparer la récupération des données du calcul,
+afin que `assessRisk` puisse recevoir directement les informations nécessaires.
+Cela permettrait d’étudier la réutilisation de données déjà chargées
+par le frontend, lorsqu’elles sont disponibles.
+
+Déplacer les appels dans le contrôleur ne réduirait pas leur nombre :
+le bénéfice dépendrait des appels réellement évités et du volume total
+échangé. Cette évolution nécessiterait également de garantir la validité et
+la fiabilité des données utilisées.
+
+**Optimiser le frontend** 
+
+Évaluer les dépendances et les ressources JavaScript, CSS et graphiques
+permettrait d'identifier celles qui peuvent être supprimées ou allégées.
+
+L'intérêt de l'arrière-plan animé pourrait également être comparé à celui
+d'un fond statique, afin de limiter les traitements purement décoratifs.
+
+**Suivre l'évolution de l'application** 
+
+Mesurer les effets des optimisations mises en place sera nécessaire afin de vérifier 
+qu'elles apportent réellement une réduction des ressources utilisées.
